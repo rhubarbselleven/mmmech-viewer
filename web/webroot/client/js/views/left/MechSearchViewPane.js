@@ -37,12 +37,22 @@ define([
         performFilter: function (evt) {
             var val = this.ui.search.val().toUpperCase();
 
-            var filter = this.entities.filter(function (model) {
-                return model.id.substr(0, val.length) === val;
-            });
+            if (val.trim() === '') {
+                // if it's blank, don't want to render the entire thing.
+                this.collection.reset();
+            } else {
 
-            // just reset with our known stuff. let events handle it all.
-            this.collection.reset(filter);
+                var filter = this.entities.filter(function (model) {
+                    return model.id.substr(0, val.length) === val;
+                });
+
+                // just reset with our known stuff. let events handle it all.
+                this.collection.reset(filter);
+
+                if (this.collection.size() === 1) {
+                    this.collection.last().select();
+                }
+            }
         },
 
         onClose: function () {

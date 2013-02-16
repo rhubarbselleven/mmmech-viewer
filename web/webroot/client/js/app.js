@@ -2,25 +2,39 @@ define([
     'jquery',
     'backbone',
     'marionette',
+    'Router',
     'collections/EntityCollection',
 
     'views/left/MechSearchViewPane'
 
-], function ($, Backbone, Marionette, EntityCollection, MechSearchViewPane) {
+], function ($, Backbone, Marionette, Router, EntityCollection, MechSearchViewPane) {
     "use strict";
 
     var app = new Marionette.Application();
     var entityCollection = new EntityCollection();
+    var controller = {
+        select: function (term) {
+            var model = entityCollection.get(term);
+            if (!!model) {
+                model.select();
+            }
+        }
+    };
+
+    var router = new Router({controller: controller});
+    router.controller = controller;
+
 
     app.addRegions({
         left: '#left',
         viewport: '#viewport',
         right: '#right'
-
     });
 
     app.addInitializer(function () {
         app.left.show(new MechSearchViewPane({entities: entityCollection}));
+
+
     });
 
 
