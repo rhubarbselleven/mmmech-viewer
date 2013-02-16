@@ -10,7 +10,7 @@ define([
     "use strict";
 
     var app = new Marionette.Application();
-    var entityCollection = new EntityCollection({url: 'data/entities.json'});
+    var entityCollection = new EntityCollection();
 
     app.addRegions({
         left: '#left',
@@ -20,13 +20,13 @@ define([
     });
 
     app.addInitializer(function () {
-        app.left.show(new MechSearchViewPane({collection: entityCollection}));
+        app.left.show(new MechSearchViewPane({entities: entityCollection}));
     });
 
 
     app.on('initialize:after', function () {
         Backbone.history.start();
-
+        entityCollection.url = 'data/entities.json';
         entityCollection.fetch({update: true});
     });
 

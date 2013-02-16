@@ -1,7 +1,7 @@
 define([
     'underscore',
     'backbone',
-    'backbone.picky'
+    'picky'
 
 ], function (_, Backbone, Picky) {
     "use strict";
