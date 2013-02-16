@@ -2,15 +2,15 @@ define([
     'jquery',
     'backbone',
     'marionette',
-    'collections/OrderedNodeCollection',
+    'collections/EntityCollection',
 
     'views/left/MechSearchViewPane'
 
-], function ($, Backbone, Marionette, OrderedNodeCollection, MechSearchViewPane) {
+], function ($, Backbone, Marionette, EntityCollection, MechSearchViewPane) {
     "use strict";
 
     var app = new Marionette.Application();
-    var entityCollection = new OrderedNodeCollection();
+    var entityCollection = new EntityCollection({url: 'data/entities.json'});
 
     app.addRegions({
         left: '#left',
@@ -20,15 +20,14 @@ define([
     });
 
     app.addInitializer(function () {
-
-        app.left.show(new MechSearchViewPane());
+        app.left.show(new MechSearchViewPane({collection: entityCollection}));
     });
 
 
     app.on('initialize:after', function () {
-
-
         Backbone.history.start();
+
+        entityCollection.fetch({update: true});
     });
 
     return app;

@@ -5,6 +5,7 @@ require.config({
         underscore: 'libs/underscore/underscore',
         backbone: 'libs/backbone/amd-0.9.10/backbone',
         marionette: 'libs/marionette/amd-1.0.0-rc4/backbone.marionette',
+        'picky': 'libs/marionette/amd-1.0.0-rc4/backbone.picky',
         'backbone.wreqr': 'libs/marionette/amd-1.0.0-rc4/backbone.wreqr',
         'backbone.babysitter': 'libs/marionette/amd-1.0.0-rc4/backbone.babysitter',
         tpl: 'libs/marionette/amd-1.0.0-rc4/tpl'

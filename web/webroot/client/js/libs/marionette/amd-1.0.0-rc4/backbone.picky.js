@@ -5,7 +5,7 @@
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define(["_", "Backbone"], factory);
+        define(["underscore", "backbone"], factory);
     }
 }(this, function (_, Backbone) {
     Backbone.Picky = (function (Backbone, _) {

@@ -5,7 +5,10 @@
     <option devel="true" />
     <option indent="4" />
     <option maxerr="50" />
+    <option nomen="true" />
+    <option predef="define, require" />
     <option vars="true" />
+    <option white="true" />
     <option anon="true" />
   </component>
 </project>
