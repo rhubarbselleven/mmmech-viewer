@@ -16,6 +16,14 @@ define([
         template: template,
         tagName: 'li',
 
+        events: {
+            'click a': 'handleClick'
+        },
+
+        handleClick: function () {
+            this.model.select();
+        },
+
         onClose: function () {
         }
     });

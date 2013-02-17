@@ -5,9 +5,10 @@ define([
     'Router',
     'collections/EntityCollection',
 
-    'views/left/MechSearchViewPane'
+    'views/left/MechSearchViewPane',
+    'views/viewport/MechDetailView'
 
-], function ($, Backbone, Marionette, Router, EntityCollection, MechSearchViewPane) {
+], function ($, Backbone, Marionette, Router, EntityCollection, MechSearchViewPane, EntityDetailView) {
     "use strict";
 
     var app = new Marionette.Application();
@@ -33,7 +34,7 @@ define([
 
     app.addInitializer(function () {
         app.left.show(new MechSearchViewPane({entities: entityCollection}));
-
+        app.viewport.show(new EntityDetailView());
 
     });
 
