@@ -1,7 +1,146 @@
-<ul>
-    <li><%= model %></li>
-    <li><%= chasis %></li>
-    <li><%= weightclass %></li>
+<h2><%= chasis %> <%= model %></h2>
 
-    <li><%= movement %></li>
-</ul>
+<dl class="dl-horizontal">
+    <dt>Year</dt>
+    <dd><%= year %></dd>
+    <dt>Weight Class</dt>
+    <dd><%= weightClass %></dd>
+    <dt>Weight</dt>
+    <dd><%= weight %></dd>
+
+    <dt>BV</dt>
+    <dd><%= bv %></dd>
+
+    <dt>Armor</dt>
+    <dd><%= armor %></dd>
+
+    <dt>Heat Capacity</dt>
+    <dd><%= heat %></dd>
+
+</dl>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Left Arm</th>
+        <th>Left Torso</th>
+        <th>Center Torso</th>
+        <th>Right Torso</th>
+        <th>Right Arm</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <ul class="unstyled">
+                <li><strong class="text-info">External: </strong><%= equipment.LA.armor.external %></li>
+                <li><strong class="text-error">Internal: </strong><%= equipment.LA.armor.internal %></li>
+                <li>
+                    <strong class="text-error">Crits</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.LA.equipment.criticals, function(crit) { %>
+                        <li><%= crit %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+                <li>
+                    <strong class="text-info">EQ</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.LA.equipment.nonCriticals, function(eq) { %>
+                        <li><%= eq %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+            </ul>
+        </td>
+        <td>
+            <ul class="unstyled">
+                <li><strong class="text-info">External: </strong><%= equipment.LT.armor.external %></li>
+                <li><strong class="text-error">Internal: </strong><%= equipment.LT.armor.internal %></li>
+                <li>
+                    <strong class="text-error">Crits</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.LT.equipment.criticals, function(crit) { %>
+                        <li><%= crit %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+                <li>
+                    <strong class="text-info">EQ</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.LT.equipment.nonCriticals, function(eq) { %>
+                        <li><%= eq %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+            </ul>
+        </td>
+        <td>
+            <ul class="unstyled">
+                <li><strong class="text-info">External: </strong><%= equipment.CT.armor.external %></li>
+                <li><strong class="text-error">Internal: </strong><%= equipment.CT.armor.internal %></li>
+                <li>
+                    <strong class="text-error">Crits</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.CT.equipment.criticals, function(crit) { %>
+                        <li><%= crit %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+                <li>
+                    <strong class="text-info">EQ</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.CT.equipment.nonCriticals, function(eq) { %>
+                        <li><%= eq %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+            </ul>
+        </td>
+        <td>
+            <ul class="unstyled">
+                <li><strong class="text-info">External: </strong><%= equipment.RT.armor.external %></li>
+                <li><strong class="text-error">Internal: </strong><%= equipment.RT.armor.internal %></li>
+                <li>
+                    <strong class="text-error">Crits</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.RT.equipment.criticals, function(crit) { %>
+                        <li><%= crit %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+                <li>
+                    <strong class="text-info">EQ</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.RT.equipment.nonCriticals, function(eq) { %>
+                        <li><%= eq %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+            </ul>
+        </td>
+        <td>
+            <ul class="unstyled">
+                <li><strong class="text-info">External: </strong><%= equipment.RA.armor.external %></li>
+                <li><strong class="text-error">Internal: </strong><%= equipment.RA.armor.internal %></li>
+                <li>
+                    <strong class="text-error">Crits</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.RA.equipment.criticals, function(crit) { %>
+                        <li><%= crit %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+                <li>
+                    <strong class="text-info">EQ</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.RA.equipment.nonCriticals, function(eq) { %>
+                        <li><%= eq %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+            </ul>
+        </td>
+    </tr>
+    </tbody>
+</table>

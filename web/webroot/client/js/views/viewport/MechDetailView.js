@@ -23,11 +23,15 @@ define([
             this.collection = new EntityCollection();
             this.entities = opts.entities;
 
-            this.entities.on('selected', this.modelSelected);
+            this.entities.on('change:selected', this.modelSelected, this);
         },
 
         modelSelected: function (model) {
-            this.collection.add(model);
+            if (model.isSelected()) {
+                this.collection.add(model);
+            } else {
+                this.collection.remove(model);
+            }
         }
     });
 });

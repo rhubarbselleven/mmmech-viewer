@@ -15,10 +15,15 @@ define([
 
         idAttribute: 'model',
 
-        initialize: function () {
-            var selectable = new Picky.Selectable(this);
-            _.extend(this, selectable);
+        select: function () {
+            this.set('selected', true);
+        },
+
+        isSelected: function () {
+            return this.get('selected');
         }
+
+
 
     });
 });
