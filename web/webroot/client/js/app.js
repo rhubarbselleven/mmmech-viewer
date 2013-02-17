@@ -34,7 +34,7 @@ define([
 
     app.addInitializer(function () {
         app.left.show(new MechSearchViewPane({entities: entityCollection}));
-        app.viewport.show(new EntityDetailView());
+        app.viewport.show(new EntityDetailView({entities: entityCollection}));
 
     });
 

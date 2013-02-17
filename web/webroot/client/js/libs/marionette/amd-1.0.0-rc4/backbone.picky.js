@@ -146,7 +146,7 @@
                 }
 
                 this.selected = true;
-                this.trigger("selected");
+                this.trigger("selected", this.model);
 
                 if (this.collection) {
                     this.collection.select(this);
