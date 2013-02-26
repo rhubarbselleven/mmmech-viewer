@@ -22,6 +22,40 @@
 <table class="table">
     <thead>
     <tr>
+        <th>Head</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <ul class="unstyled">
+                <li><strong class="text-info">External: </strong><%= equipment.HD.armor.external %></li>
+                <li><strong class="text-error">Internal: </strong><%= equipment.HD.armor.internal %></li>
+                <li>
+                    <strong class="text-error">Crits</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.HD.equipment.criticals, function(crit) { %>
+                        <li><%= crit %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+                <li>
+                    <strong class="text-info">EQ</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.HD.equipment.nonCriticals, function(eq) { %>
+                        <li><%= eq %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+            </ul>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<table class="table">
+    <thead>
+    <tr>
         <th>Left Arm</th>
         <th>Left Torso</th>
         <th>Center Torso</th>
@@ -135,6 +169,66 @@
                     <strong class="text-info">EQ</strong>
                     <ul class="unstyled">
                         <% _.each(equipment.RA.equipment.nonCriticals, function(eq) { %>
+                        <li><%= eq %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+            </ul>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<span class="alert-info">Does not support QUAD atm.</span>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Left Leg</th>
+        <th>Right Leg</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <ul class="unstyled">
+                <li><strong class="text-info">External: </strong><%= equipment.LL.armor.external %></li>
+                <li><strong class="text-error">Internal: </strong><%= equipment.LL.armor.internal %></li>
+                <li>
+                    <strong class="text-error">Crits</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.LL.equipment.criticals, function(crit) { %>
+                        <li><%= crit %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+                <li>
+                    <strong class="text-info">EQ</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.LL.equipment.nonCriticals, function(eq) { %>
+                        <li><%= eq %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <ul class="unstyled">
+                <li><strong class="text-info">External: </strong><%= equipment.RL.armor.external %></li>
+                <li><strong class="text-error">Internal: </strong><%= equipment.RL.armor.internal %></li>
+                <li>
+                    <strong class="text-error">Crits</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.RL.equipment.criticals, function(crit) { %>
+                        <li><%= crit %></li>
+                        <% }); %>
+                    </ul>
+                </li>
+                <li>
+                    <strong class="text-info">EQ</strong>
+                    <ul class="unstyled">
+                        <% _.each(equipment.RL.equipment.nonCriticals, function(eq) { %>
                         <li><%= eq %></li>
                         <% }); %>
                     </ul>
