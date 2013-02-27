@@ -16,7 +16,7 @@
 
     } else if (typeof define === 'function' && define.amd) {
 
-        define(['jquery', 'underscore', 'backbone', 'backbone.wreqr', 'backbone.babysitter'], factory);
+        define(['jquery', 'underscore', 'backbone', 'backbone.wreqr.js', 'backbone.babysitter.js'], factory);
 
     }
 }(this, function ($, _, Backbone) {
