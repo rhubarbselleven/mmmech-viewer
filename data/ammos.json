@@ -1,0 +1,430 @@
+{"ATM 6 ER Ammo": {
+    "techRating": "F",
+    "rounds": "10\/6"
+}, "LAC\/5 Ammo": {
+    "techRating": "D",
+    "rounds": "20\/5"
+}, "LRM 5 (Clan) Narc-capable Ammo": {
+    "techRating": "C",
+    "rounds": "24\/5"
+}, "LB 10-X AC Ammo": {
+    "techRating": "E",
+    "rounds": "10\/10"
+}, "LRM 5 Narc-capable Ammo": {
+    "techRating": "C",
+    "rounds": "24\/5"
+}, "LB 20-X Cluster Ammo": {
+    "techRating": "E",
+    "rounds": "5\/20"
+}, "SRT 4 Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "25\/4"
+}, "ATM 12 Ammo": {
+    "techRating": "F",
+    "rounds": "5\/12"
+}, "Silver Bullet Gauss Ammo": {
+    "techRating": "C",
+    "rounds": "8\/15"
+}, "Enhanced LRM 5 Ammo": {
+    "techRating": "C",
+    "rounds": "24\/5"
+}, "AMS Ammo": {
+    "techRating": "E",
+    "rounds": "12\/2"
+}, "LRT 15 Ammo": {
+    "techRating": "C",
+    "rounds": "8\/15"
+}, "LAC\/2 Ammo": {
+    "techRating": "D",
+    "rounds": "45\/2"
+}, "Light Gauss Ammo": {
+    "techRating": "E",
+    "rounds": "16\/0"
+}, "Heavy Machine Gun Ammo": {
+    "techRating": "A",
+    "rounds": "100\/3"
+}, "Heavy Gauss Ammo": {
+    "techRating": "E",
+    "rounds": "4\/0"
+}, "LRM 10 Ammo": {
+    "techRating": "C",
+    "rounds": "12\/10"
+}, "SRM 2 (Clan) Narc-capable Ammo": {
+    "techRating": "C",
+    "rounds": "50\/2"
+}, "LRT 15 (Clan) Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "8\/15"
+}, "Thunderbolt 15 Ammo": {
+    "techRating": "F",
+    "rounds": "4\/1"
+}, "MML 5 SRM Ammo": {
+    "techRating": "E",
+    "rounds": "20\/5"
+}, "LRT 10 Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "12\/10"
+}, "SRM 4 Ammo": {
+    "techRating": "C",
+    "rounds": "25\/4"
+}, "MML 7 LRM Ammo": {
+    "techRating": "E",
+    "rounds": "17\/7"
+}, "ATM 9 ER Ammo": {
+    "techRating": "F",
+    "rounds": "7\/9"
+}, "LRM 10 Narc-capable Ammo": {
+    "techRating": "C",
+    "rounds": "12\/10"
+}, "ATM 3 HE Ammo": {
+    "techRating": "F",
+    "rounds": "20\/3"
+}, "Thunderbolt 20 Ammo": {
+    "techRating": "F",
+    "rounds": "3\/1"
+}, "Thunderbolt 5 Ammo": {
+    "techRating": "F",
+    "rounds": "12\/1"
+}, "Streak LRM 10 Ammo": {
+    "techRating": "C",
+    "rounds": "12\/10"
+}, "Streak LRM 15 Ammo": {
+    "techRating": "C",
+    "rounds": "8\/15"
+}, "MML 5 SRM Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "20\/5"
+}, "LRM 15 (Clan) Artemis V-capable Ammo": {
+    "techRating": "C",
+    "rounds": "8\/15"
+}, "SRT 6 Ammo": {
+    "techRating": "C",
+    "rounds": "15\/6"
+}, "MRM 30 Ammo": {
+    "techRating": "C",
+    "rounds": "8\/30"
+}, "SRM 4 Narc-capable Ammo": {
+    "techRating": "C",
+    "rounds": "25\/4"
+}, "LB 2-X Cluster Ammo": {
+    "techRating": "E",
+    "rounds": "45\/2"
+}, "Half Machine Gun Ammo": {
+    "techRating": "A",
+    "rounds": "100\/2"
+}, "LRM 20 (Clan) Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "6\/20"
+}, "LB 10-X Cluster Ammo": {
+    "techRating": "E",
+    "rounds": "10\/10"
+}, "Fluid Gun Ammo": {
+    "techRating": "C",
+    "rounds": "20\/1"
+}, "iNarc Pods": {
+    "techRating": "E",
+    "rounds": "4\/1"
+}, "MML 3 LRM Ammo": {
+    "techRating": "E",
+    "rounds": "40\/3"
+}, "Narc Pods": {
+    "techRating": "E",
+    "rounds": "6\/1"
+}, "AC\/5 Ammo": {
+    "techRating": "C",
+    "rounds": "20\/5"
+}, "Streak SRM 2 Ammo": {
+    "techRating": "C",
+    "rounds": "50\/2"
+}, "SRM 6 Narc-capable Ammo": {
+    "techRating": "C",
+    "rounds": "15\/6"
+}, "LRM 5 Ammo": {
+    "techRating": "C",
+    "rounds": "24\/5"
+}, "MML 7 LRM Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "17\/7"
+}, "AP Gauss Rifle Ammo": {
+    "techRating": "F",
+    "rounds": "40\/0"
+}, "MML 9 SRM Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "11\/9"
+}, "MML 3 SRM Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "33\/3"
+}, "LRM 5 (Clan) Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "24\/5"
+}, "LRM 10 (Clan) Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "12\/10"
+}, "ATM 12 ER Ammo": {
+    "techRating": "F",
+    "rounds": "5\/12"
+}, "MML 7 SRM Ammo": {
+    "techRating": "E",
+    "rounds": "14\/7"
+}, "Heavy Rifle Ammo": {
+    "techRating": "C",
+    "rounds": "6\/9"
+}, "Vehicle Flamer Ammo": {
+    "techRating": "A",
+    "rounds": "20\/2"
+}, "LB 5-X AC Ammo": {
+    "techRating": "E",
+    "rounds": "20\/5"
+}, "LRT 10 Ammo": {
+    "techRating": "C",
+    "rounds": "12\/10"
+}, "Sniper Ammo": {
+    "techRating": "C",
+    "rounds": "10\/20"
+}, "ATM 12 HE Ammo": {
+    "techRating": "F",
+    "rounds": "5\/12"
+}, "Magshot GR Ammo": {
+    "techRating": "E",
+    "rounds": "50\/0"
+}, "LRM 10 Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "12\/10"
+}, "ATM 6 HE Ammo": {
+    "techRating": "F",
+    "rounds": "10\/6"
+}, "Plasma Cannon Ammo": {
+    "techRating": "F",
+    "rounds": "10\/2"
+}, "ATM 9 Ammo": {
+    "techRating": "F",
+    "rounds": "7\/9"
+}, "SRM 6 (Clan) Narc-capable Ammo": {
+    "techRating": "C",
+    "rounds": "15\/6"
+}, "ProtoMech AC\/4 Ammo": {
+    "techRating": "C",
+    "rounds": "20\/4"
+}, "HVAC\/10 Ammo": {
+    "techRating": "C",
+    "rounds": "8\/10"
+}, "LRM 15 Ammo": {
+    "techRating": "C",
+    "rounds": "8\/15"
+}, "LRT 15 Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "8\/15"
+}, "Arrow IV FASCAM Ammo": {
+    "techRating": "C",
+    "rounds": "5\/20"
+}, "Ultra AC\/5 Ammo": {
+    "techRating": "E",
+    "rounds": "20\/5"
+}, "AP Mortar 8 Ammo": {
+    "techRating": "C",
+    "rounds": "4\/8"
+}, "SRT 4 Ammo": {
+    "techRating": "C",
+    "rounds": "25\/4"
+}, "MRM 20 Ammo": {
+    "techRating": "C",
+    "rounds": "12\/20"
+}, "ATM 9 HE Ammo": {
+    "techRating": "F",
+    "rounds": "7\/9"
+}, "HAG\/30 Ammo": {
+    "techRating": "F",
+    "rounds": "4\/30"
+}, "LRM 15 (Clan) Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "8\/15"
+}, "LRM 15 Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "8\/15"
+}, "MRM 40 Ammo": {
+    "techRating": "C",
+    "rounds": "6\/40"
+}, "Arrow IV Homing Ammo": {
+    "techRating": "C",
+    "rounds": "5\/20"
+}, "Half Heavy Machine Gun Ammo": {
+    "techRating": "A",
+    "rounds": "50\/3"
+}, "Arrow IV Ammo": {
+    "techRating": "C",
+    "rounds": "5\/20"
+}, "SRM 2 Ammo": {
+    "techRating": "C",
+    "rounds": "50\/2"
+}, "Streak SRM 4 Ammo": {
+    "techRating": "C",
+    "rounds": "25\/4"
+}, "HAG\/40 Ammo": {
+    "techRating": "F",
+    "rounds": "3\/40"
+}, "LRM 15 Narc-capable Ammo": {
+    "techRating": "C",
+    "rounds": "8\/15"
+}, "MML 9 SRM Ammo": {
+    "techRating": "E",
+    "rounds": "11\/9"
+}, "SRM 6 Ammo": {
+    "techRating": "C",
+    "rounds": "15\/6"
+}, "SRM 6 Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "15\/6"
+}, "SRM 2 Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "50\/2"
+}, "Ultra AC\/10 Ammo": {
+    "techRating": "E",
+    "rounds": "10\/10"
+}, "Rotary AC\/2 Ammo": {
+    "techRating": "E",
+    "rounds": "45\/2"
+}, "MML 9 LRM Ammo": {
+    "techRating": "E",
+    "rounds": "13\/9"
+}, "LRM 20 (Clan) Narc-capable Ammo": {
+    "techRating": "C",
+    "rounds": "6\/20"
+}, "Machine Gun Ammo": {
+    "techRating": "A",
+    "rounds": "200\/2"
+}, "LRM 20 (Clan) Artemis V-capable Ammo": {
+    "techRating": "C",
+    "rounds": "6\/20"
+}, "Gauss Ammo": {
+    "techRating": "E",
+    "rounds": "8\/0"
+}, "Rotary AC\/5 Ammo": {
+    "techRating": "E",
+    "rounds": "20\/5"
+}, "Improved Heavy Gauss Ammo": {
+    "techRating": "C",
+    "rounds": "4\/0"
+}, "LB 2-X AC Ammo": {
+    "techRating": "E",
+    "rounds": "45\/2"
+}, "AC\/10 Ammo": {
+    "techRating": "C",
+    "rounds": "10\/10"
+}, "LB 20-X AC Ammo": {
+    "techRating": "E",
+    "rounds": "5\/20"
+}, "MML 3 SRM Ammo": {
+    "techRating": "E",
+    "rounds": "33\/3"
+}, "SRM 4 (Clan) Narc-capable Ammo": {
+    "techRating": "C",
+    "rounds": "25\/4"
+}, "LRM 15 (Clan) Narc-capable Ammo": {
+    "techRating": "C",
+    "rounds": "8\/15"
+}, "Coolant Pod": {
+    "techRating": "C",
+    "rounds": "1\/1"
+}, "LB 5-X Cluster Ammo": {
+    "techRating": "E",
+    "rounds": "20\/5"
+}, "SRM 6 (Clan) Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "15\/6"
+}, "MRM 10 Ammo": {
+    "techRating": "C",
+    "rounds": "24\/10"
+}, "SRM 4 (Clan) Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "25\/4"
+}, "Light Machine Gun Ammo": {
+    "techRating": "A",
+    "rounds": "200\/1"
+}, "Ultra AC\/20 Ammo": {
+    "techRating": "E",
+    "rounds": "5\/20"
+}, "MML 7 SRM Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "14\/7"
+}, "Thunderbolt 10 Ammo": {
+    "techRating": "F",
+    "rounds": "6\/1"
+}, "Nail\/Rivet Gun Ammo": {
+    "techRating": "A",
+    "rounds": "300\/1"
+}, "MML 9 LRM Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "13\/9"
+}, "Half Light Machine Gun Ammo": {
+    "techRating": "A",
+    "rounds": "100\/1"
+}, "Plasma Rifle Ammo": {
+    "techRating": "E",
+    "rounds": "10\/1"
+}, "SRT 2 Ammo": {
+    "techRating": "C",
+    "rounds": "50\/2"
+}, "LRM 5 Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "24\/5"
+}, "AC\/20 Ammo": {
+    "techRating": "C",
+    "rounds": "5\/20"
+}, "Ultra AC\/2 Ammo": {
+    "techRating": "E",
+    "rounds": "45\/2"
+}, "LRM 20 Narc-capable Ammo": {
+    "techRating": "C",
+    "rounds": "6\/20"
+}, "ATM 3 ER Ammo": {
+    "techRating": "F",
+    "rounds": "20\/3"
+}, "MML 5 LRM Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "24\/5"
+}, "LRM 20 Ammo": {
+    "techRating": "C",
+    "rounds": "6\/20"
+}, "Streak SRM 6 Ammo": {
+    "techRating": "E",
+    "rounds": "15\/6"
+}, "AC\/2 Ammo": {
+    "techRating": "C",
+    "rounds": "45\/2"
+}, "MML 5 LRM Ammo": {
+    "techRating": "E",
+    "rounds": "24\/5"
+}, "ATM 6 Ammo": {
+    "techRating": "F",
+    "rounds": "10\/6"
+}, "Sniper Cannon Ammo": {
+    "techRating": "C",
+    "rounds": "10\/10"
+}, "HAG\/20 Ammo": {
+    "techRating": "F",
+    "rounds": "6\/20"
+}, "SRM 4 Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "25\/4"
+}, "Long Tom Cannon Ammo": {
+    "techRating": "C",
+    "rounds": "5\/20"
+}, "ATM 3 Ammo": {
+    "techRating": "F",
+    "rounds": "20\/3"
+}, "LRT 5 Ammo": {
+    "techRating": "C",
+    "rounds": "24\/5"
+}, "MML 3 LRM Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "40\/3"
+}, "LRT 15 (Clan) Artemis V-capable Ammo": {
+    "techRating": "C",
+    "rounds": "8\/15"
+}, "LRM 20 Artemis-capable Ammo": {
+    "techRating": "C",
+    "rounds": "6\/20"
+}, "Taser Ammo": {
+    "techRating": "C",
+    "rounds": "5\/1"
+}}

@@ -1,0 +1,82 @@
+{"model": "EXT-4A", "weight": 65.0, "armor": 168, "chasis": "Exterminator", "bv": 1345, "equipment": {
+    "LA": {
+        "armor": {
+            "external": 18,
+            "internal": 10
+        },
+        "equipment": {
+            "criticals": ["Shoulder", "Upper Arm Actuator", "Lower Arm Actuator", "Hand Actuator"],
+            "nonCriticals": ["Medium Laser", "Medium Laser"]
+        }
+    },
+    "RT": {
+        "armor": {
+            "external": 20,
+            "internal": 15
+        },
+        "equipment": {
+            "criticals": [],
+            "nonCriticals": ["Jump Jet", "Jump Jet", "Machine Gun", "Half Machine Gun Ammo"]
+        }
+    },
+    "HD": {
+        "armor": {
+            "external": 9,
+            "internal": 3
+        },
+        "equipment": {
+            "criticals": ["Life Support", "Sensors", "Cockpit", "Sensors"],
+            "nonCriticals": ["Small Laser"]
+        }
+    },
+    "LT": {
+        "armor": {
+            "external": 20,
+            "internal": 15
+        },
+        "equipment": {
+            "criticals": [],
+            "nonCriticals": ["Jump Jet", "Jump Jet", "LRM 10"]
+        }
+    },
+    "CT": {
+        "armor": {
+            "external": 21,
+            "internal": 21
+        },
+        "equipment": {
+            "criticals": ["Fusion Engine", "Fusion Engine", "Fusion Engine", "Gyro", "Gyro", "Gyro", "Gyro", "Fusion Engine", "Fusion Engine", "Fusion Engine"],
+            "nonCriticals": ["Jump Jet", "LRM 10 Ammo"]
+        }
+    },
+    "RA": {
+        "armor": {
+            "external": 18,
+            "internal": 10
+        },
+        "equipment": {
+            "criticals": ["Shoulder", "Upper Arm Actuator", "Lower Arm Actuator", "Hand Actuator"],
+            "nonCriticals": ["Medium Laser", "Medium Laser"]
+        }
+    },
+    "LL": {
+        "armor": {
+            "external": 19,
+            "internal": 15
+        },
+        "equipment": {
+            "criticals": ["Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator"],
+            "nonCriticals": []
+        }
+    },
+    "RL": {
+        "armor": {
+            "external": 19,
+            "internal": 15
+        },
+        "equipment": {
+            "criticals": ["Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator"],
+            "nonCriticals": []
+        }
+    }
+}, "heat": 11, "cost": 6531497.0, "id": -1, "weightClass": "Heavy", "movement": "5\/8\/5", "year": 3007, "shortName": "Exterminator EXT-4A", "internal": 104}
