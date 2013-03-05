@@ -2,10 +2,9 @@ define([
 
     'underscore',
     'backbone',
-    'picky',
 
     'models/MechModel'
-], function (_, Backbone, Picky, MechModel) {
+], function (_, Backbone, MechModel) {
     "use strict";
 
     return Backbone.Collection.extend({

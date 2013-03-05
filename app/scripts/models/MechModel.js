@@ -1,9 +1,8 @@
 define([
     'underscore',
-    'backbone',
-    'picky'
+    'backbone'
 
-], function (_, Backbone, Picky) {
+], function (_, Backbone) {
     "use strict";
 
     return Backbone.Model.extend({

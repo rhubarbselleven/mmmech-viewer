@@ -1,27 +1,29 @@
-// shortcut aliases.
 require.config({
     paths: {
-        jquery: 'http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min',
-        underscore: 'libs/underscore/underscore',
-        backbone: 'libs/backbone/amd-0.9.10/backbone',
-        marionette: 'libs/marionette/amd-1.0.0-rc4/backbone.marionette',
-        'picky': 'libs/marionette/amd-1.0.0-rc4/backbone.picky',
-        'backbone.wreqr': 'libs/marionette/amd-1.0.0-rc4/backbone.wreqr',
-        'backbone.babysitter': 'libs/marionette/amd-1.0.0-rc4/backbone.babysitter',
-        tpl: 'libs/marionette/amd-1.0.0-rc4/tpl'
-    },
+        jquery: '../components/jquery/jquery',
+        bootstrap: 'vendor/bootstrap',
+        backbone: '../components/backbone/backbone',
+        underscore: '../components/underscore-amd/underscore',
+        marionette: '../components/marionette/lib/core/amd/backbone.marionette',
+        'backbone.wreqr': '../components/backbone.wreqr/lib/amd/backbone.wreqr',
+        'backbone.babysitter': '../components/backbone.babysitter/lib/amd/backbone.babysitter',
+        tpl: '../components/requirejs-tpl/tpl'
 
+
+    },
     shim: {
-        jquery: {
+        bootstrap: {
+            deps: ['jquery'],
             exports: 'jquery'
         },
         underscore: {
             exports: '_'
         },
-        marionette: {
-            exports: 'Backbone.Marionette',
-            deps: ['backbone']
+        backbone: {
+            deps: ['underscore'],
+            exports: 'Backbone'
         }
+
 
     }
 });
