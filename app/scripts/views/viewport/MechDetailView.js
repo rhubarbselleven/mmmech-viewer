@@ -10,14 +10,16 @@ define([
     'views/viewport/EntityDetail',
 
     'tpl!templates/viewport/entity.html'
-], function (Marionette, EntityCollection, EntityDetailView, template) {
+
+], function (Marionette, EntityCollection, EntityDetailView, entityTemplate) {
     "use strict";
 
     return Marionette.CompositeView.extend({
-        template: template,
+        template: entityTemplate,
 
         itemView: EntityDetailView,
 //        itemViewContainer: '.selectedEntities',
+
 
         initialize: function (opts) {
             this.collection = new EntityCollection();
@@ -25,6 +27,8 @@ define([
 
             this.entities.on('change:selected', this.modelSelected, this);
         },
+
+
 
         modelSelected: function (model) {
             if (model.isSelected()) {

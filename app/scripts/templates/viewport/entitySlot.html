@@ -1,0 +1,19 @@
+<ul class="unstyled">
+    <li>Armor: <span class="badge badge-info"><%= armor.external %></span> <span class="badge badge-important"><%= armor.internal %></span></li>
+    <li>
+        <strong class="text-error">Critical Slots</strong>
+        <ul class="unstyled">
+            <% _.each(equipment.criticals, function(crit) { %>
+            <li><%= crit %></li>
+            <% }); %>
+        </ul>
+    </li>
+    <li>
+        <strong class="text-info">Equipment Slots</strong>
+        <ul class="unstyled">
+            <% _.each(equipment.nonCriticals, function(eq) { %>
+            <li><%= eq %></li>
+            <% }); %>
+        </ul>
+    </li>
+</ul>
