@@ -25,18 +25,21 @@ define([
     var router = new Router({controller: controller});
     router.controller = controller;
 
-
     app.addRegions({
         left: '#left',
         viewport: '#viewport',
         right: '#right'
     });
 
-    app.addInitializer(function () {
-        app.left.show(new MechSearchViewPane({entities: entityCollection}));
-        app.viewport.show(new EntityDetailView({entities: entityCollection}));
-
+    $.getJSON('data/weapons.json', function(weapons){
+        // todo: once weapons.json has been refactored, this will be a collection.
+        app.addInitializer(function () {
+            app.left.show(new MechSearchViewPane({entities: entityCollection}));
+            app.viewport.show(new EntityDetailView({entities: entityCollection, weapons: weapons}));
+        });
     });
+
+
 
 
     app.on('initialize:after', function () {

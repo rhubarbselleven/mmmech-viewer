@@ -18,12 +18,16 @@ define([
         template: entityTemplate,
 
         itemView: EntityDetailView,
+        itemViewOptions: function() {
+            return {weapons: this.weapons};
+        },
 //        itemViewContainer: '.selectedEntities',
 
 
         initialize: function (opts) {
             this.collection = new EntityCollection();
             this.entities = opts.entities;
+            this.weapons = opts.weapons;
 
             this.entities.on('change:selected', this.modelSelected, this);
         },
