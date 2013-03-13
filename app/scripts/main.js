@@ -1,4 +1,5 @@
 require.config({
+    waitSeconds : 15, //make sure it is enough to load all scripts
     paths: {
         jquery: '../components/jquery/jquery',
         bootstrap: 'vendor/bootstrap',
@@ -7,7 +8,12 @@ require.config({
         marionette: '../components/marionette/lib/core/amd/backbone.marionette',
         'backbone.wreqr': '../components/backbone.wreqr/lib/amd/backbone.wreqr',
         'backbone.babysitter': '../components/backbone.babysitter/lib/amd/backbone.babysitter',
-        tpl: '../components/requirejs-tpl/tpl'
+        tpl: '../components/requirejs-tpl/tpl',
+        async: '../components/requirejs-plugins/src/async',
+        goog: '../components/requirejs-plugins/src/goog',
+        propertyParser: '../components/requirejs-plugins/src/propertyParser',
+        text: '../components/requirejs-plugins/lib/text',
+        json: '../components/requirejs-plugins/src/json'
 
 
     },

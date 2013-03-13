@@ -10,7 +10,8 @@ define([
 
     'tpl!templates/viewport/entityDetail.html',
     'tpl!templates/viewport/entitySlot.html',
-    'tpl!templates/viewport/entityWeapons.html'
+    'tpl!templates/viewport/entityWeapons.html',
+    'goog!visualization,1,packages:[corechart]'
 ], function (_, Marionette, entityTemplate, entitySlotTemplate, entityWeapons) {
     "use strict";
 
@@ -22,6 +23,34 @@ define([
                 inThis.append(renderThis(w));
             }
         }) ;
+    }
+
+    function collationHelper(searchThis, forThese, collateToThis) {
+        _.each(forThese, function(v, i) {
+            var w = searchThis[v];
+            if (!!w) {
+                var t = [];
+
+                // name is easy
+                t.push(v);
+
+                // min range
+                t.push(w.minimumRange);
+
+                // short range
+                t.push(w.shortRange);
+
+                // medium range
+                t.push(w.mediumRange);
+
+                // long range
+                t.push(w.longRange);
+
+
+                collateToThis.push(t);
+            }
+        });
+
     }
 
     return Marionette.ItemView.extend({
@@ -37,7 +66,8 @@ define([
             LL: '.slot-LL',
             RL: '.slot-RL',
 
-            WL: '.weaponList'
+            WL: '.weaponList',
+            weaponRanges: '.weaponRange'
         },
 
         initialize: function(opts) {
@@ -67,7 +97,30 @@ define([
             renderHelper(this.weapons, equips.LL.equipment.nonCriticals, entityWeapons, this.ui.WL);
             renderHelper(this.weapons, equips.RL.equipment.nonCriticals, entityWeapons, this.ui.WL);
 
+            // Ok, the fun stuff.
+            var headers = ['Name', 'Minimum Range', 'Short Range', 'Medium Range', 'Long Range'];
+            var rawData = [];
+            rawData.push(headers);
 
+            collationHelper(this.weapons, equips.HD.equipment.nonCriticals, rawData);
+            collationHelper(this.weapons, equips.LA.equipment.nonCriticals, rawData);
+            collationHelper(this.weapons, equips.LT.equipment.nonCriticals, rawData);
+            collationHelper(this.weapons, equips.CT.equipment.nonCriticals, rawData);
+            collationHelper(this.weapons, equips.RT.equipment.nonCriticals, rawData);
+            collationHelper(this.weapons, equips.RA.equipment.nonCriticals, rawData);
+            collationHelper(this.weapons, equips.LL.equipment.nonCriticals, rawData);
+            collationHelper(this.weapons, equips.RL.equipment.nonCriticals, rawData);
+
+            var data = google.visualization.arrayToDataTable(rawData);
+            var chart = new google.visualization.BarChart(this.ui.weaponRanges[0]);
+
+            chart.draw(data,
+                {title:"Weapon Range",
+                    width:800, height:600,
+                    vAxis: {title: "Weapon"},
+                    hAxis: {title: "Range Bracket"},
+                    isStacked: true}
+            );
 
         },
 
