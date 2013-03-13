@@ -77,7 +77,7 @@ define([
         onRender: function () {
             console.log("Rendering: " + this.model.id);
 
-            var equips = this.model.get('equipment');
+            var equips = this.model.get('location');
             this.ui.HD.append(entitySlotTemplate(equips.HD));
             this.ui.LA.append(entitySlotTemplate(equips.LA));
             this.ui.LT.append(entitySlotTemplate(equips.LT));
