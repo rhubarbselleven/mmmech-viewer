@@ -9,13 +9,21 @@ define([
     'collections/EntityCollection',
     'views/viewport/EntityDetail',
 
-    'tpl!templates/viewport/entity.html'
+    'tpl!templates/viewport/entity.html',
+    'tpl!templates/viewport/introduction.html'
 
-], function (Marionette, EntityCollection, EntityDetailView, entityTemplate) {
+
+], function (Marionette, EntityCollection, EntityDetailView, entityTemplate, emptyViewTemplate) {
     "use strict";
+
+    var EmptyView = Marionette.ItemView.extend({
+        template: emptyViewTemplate
+    });
 
     return Marionette.CompositeView.extend({
         template: entityTemplate,
+
+        emptyView: EmptyView,
 
         itemView: EntityDetailView,
         itemViewOptions: function() {

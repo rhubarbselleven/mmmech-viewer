@@ -10,7 +10,7 @@ define([
 
     'json!../data/weapons.json'
 
-], function ($, Backbone, Marionette, Router, EntityCollection, MechSearchViewPane, EntityDetailView, weapons) {
+], function ($, Backbone, Marionette, Router, EntityCollection, MechSearchViewPane, MechDetailView, weapons) {
     "use strict";
 
     var app = new Marionette.Application();
@@ -40,7 +40,7 @@ define([
 //        todo: once weapons.json has been refactored, this will be a collection.
         app.addInitializer(function () {
             app.left.show(new MechSearchViewPane({entities: entityCollection}));
-            app.viewport.show(new EntityDetailView({entities: entityCollection, weapons: weapons}));
+            app.viewport.show(new MechDetailView({entities: entityCollection, weapons: weapons}));
 //        });
     });
 
