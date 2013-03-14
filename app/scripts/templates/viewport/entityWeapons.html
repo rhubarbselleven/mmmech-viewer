@@ -2,9 +2,10 @@
     <tr>
         <td><%= name %></td>
         <td><%= heat %></td>
-        <td><%= damage %></td>
-        <td><%= minimumRange %></td>
-        <td><%= shortRange %></td>
-        <td><%= mediumRange %></td>
-        <td><%= longRange %></td>
+        <td><% if (damage < 0) { %>
+            -missile-
+            <% } else { %>
+
+            <%= damage %>
+            <% } %></td>
     </tr>

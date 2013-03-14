@@ -17,10 +17,13 @@ define([
     var entityCollection = new EntityCollection();
     var controller = {
         select: function (term) {
-            var model = entityCollection.get(term);
-            if (!!model) {
-                model.select();
-            }
+            entityCollection.on('sync', function() {
+                var model = entityCollection.get(term);
+                if (!!model) {
+                    model.select();
+                }
+            });
+
         }
     };
 

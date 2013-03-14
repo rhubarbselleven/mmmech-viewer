@@ -17,7 +17,7 @@ define([
             },
 
             appRoutes: {
-                '#/:model': 'select'
+                ':model': 'select'
             },
 
             select: function (eh) {

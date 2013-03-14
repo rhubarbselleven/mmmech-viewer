@@ -66,6 +66,8 @@ define([
             LL: '.slot-LL',
             RL: '.slot-RL',
 
+            LTR: '.slot-LTR',
+
             WL: '.weaponList',
             weaponRanges: '.weaponRange'
         },
@@ -115,11 +117,13 @@ define([
             var chart = new google.visualization.BarChart(this.ui.weaponRanges[0]);
 
             chart.draw(data,
-                {title:"Weapon Range",
-                    width:800, height:600,
-                    vAxis: {title: "Weapon"},
-                    hAxis: {title: "Range Bracket"},
-                    isStacked: true}
+                {title:"Weapon Ranges",
+                    width:900, height:600,
+                    axisTitlesPosition: 'none',
+                    vAxis: {title: ""},
+                    hAxis: {title: "Range Bracket", minorGridlines: 5 },
+                    colors: ['red', 'blue', 'green', 'orange'],
+                    isStacked: false}
             );
 
         },
