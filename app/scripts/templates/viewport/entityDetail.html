@@ -1,44 +1,54 @@
 <h2><%= chasis %> <%= model %></h2>
 
-<dl class="dl-horizontal">
-    <dt>Movement</dt>
-    <dd><%= movement %></dd>
-    <dt>Year</dt>
-    <dd><%= year %></dd>
-    <dt>Weight Class</dt>
-    <dd><%= weightClass %></dd>
-    <dt>Weight</dt>
-    <dd><%= weight %></dd>
+<div class="row-fluid">
 
-    <dt>BV</dt>
-    <dd><%= bv %></dd>
+    <div class="entityDamages span4">
 
-    <dt>Armor</dt>
-    <dd><%= armor %></dd>
+        <dl class="dl-horizontal">
+            <dt>Year</dt>
+            <dd><%= year %></dd>
+            <dt>Weight Class</dt>
+            <dd><%= weightClass %></dd>
+            <dt>Weight</dt>
+            <dd><%= weight %></dd>
 
-    <dt>Heat Capacity</dt>
-    <dd><%= heat %></dd>
+            <dt>BV</dt>
+            <dd><%= bv %></dd>
 
-</dl>
+            <dt>Movement</dt>
+            <dd><%= movement %></dd>
 
-<div class="entityDamages">
 
-    <table class="table table-hover table-condensed">
+            <dt>Armor</dt>
+            <dd><%= armor %></dd>
 
-        <thead>
-        <tr>
-            <th>Weapon</th>
+            <dt>Heat Capacity</dt>
+            <dd><%= heat %></dd>
 
-            <th>Heat</th>
-            <th>Damage</th>
-        </tr>
-        </thead>
-        <tbody class="weaponList"></tbody>
-    </table>
+        </dl>
 
+
+    </div>
+    <div class="span8">
+        <table class="table table-hover table-condensed">
+
+            <thead>
+            <tr>
+                <th>Weapon</th>
+
+                <th>Heat</th>
+                <th>Damage</th>
+            </tr>
+            </thead>
+            <tbody class="weaponList"></tbody>
+        </table>
+    </div>
 </div>
 
-<div class="weaponRange"></div>
+<div class="row-fluid">
+    <div class="weaponRange"></div>
+</div>
+
 
 <table class="table table-condensed">
     <thead>

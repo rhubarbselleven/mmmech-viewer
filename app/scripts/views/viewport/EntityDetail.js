@@ -118,7 +118,9 @@ define([
 
             chart.draw(data,
                 {title:"Weapon Ranges",
-                    width:900, height:600,
+                    // todo: bind this to el sizes
+//                    width: this.$el.width(), height: this.$el.height(),
+                    width: 800, height: 400,
                     axisTitlesPosition: 'none',
                     vAxis: {title: ""},
                     hAxis: {title: "Range Bracket", minorGridlines: 5 },

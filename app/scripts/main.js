@@ -2,7 +2,7 @@ require.config({
     waitSeconds : 15, //make sure it is enough to load all scripts
     paths: {
         jquery: '../components/jquery/jquery',
-        bootstrap: 'vendor/bootstrap',
+        bootstrap: '../components/bootstrap.css/js/bootstrap',
         backbone: '../components/backbone/backbone',
         underscore: '../components/underscore-amd/underscore',
         marionette: '../components/marionette/lib/core/amd/backbone.marionette',
@@ -34,7 +34,7 @@ require.config({
     }
 });
 
-require(['app'], function (app) {
+require(['app', 'bootstrap'], function (app) {
     "use strict";
 
     app.start();
