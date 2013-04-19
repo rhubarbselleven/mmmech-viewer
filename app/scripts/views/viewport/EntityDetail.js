@@ -35,6 +35,9 @@ define([
                 t.push(v);
 
                 // min range
+                if (w.minimumRange == undefined) {
+                    w.minimumRange = 0;
+                }
                 t.push(w.minimumRange);
 
                 // short range
@@ -80,24 +83,17 @@ define([
             console.log("Rendering: " + this.model.id);
 
             var equips = this.model.get('location');
+
             this.ui.HD.append(entitySlotTemplate(equips.HD));
-            this.ui.LA.append(entitySlotTemplate(equips.LA));
+
             this.ui.LT.append(entitySlotTemplate(equips.LT));
             this.ui.CT.append(entitySlotTemplate(equips.CT));
             this.ui.RT.append(entitySlotTemplate(equips.RT));
-            this.ui.RA.append(entitySlotTemplate(equips.RA));
-            this.ui.LL.append(entitySlotTemplate(equips.LL));
-            this.ui.RL.append(entitySlotTemplate(equips.RL));
-
 
             renderHelper(this.weapons, equips.HD.equipment.nonCriticals, entityWeapons, this.ui.WL);
-            renderHelper(this.weapons, equips.LA.equipment.nonCriticals, entityWeapons, this.ui.WL);
             renderHelper(this.weapons, equips.LT.equipment.nonCriticals, entityWeapons, this.ui.WL);
             renderHelper(this.weapons, equips.CT.equipment.nonCriticals, entityWeapons, this.ui.WL);
             renderHelper(this.weapons, equips.RT.equipment.nonCriticals, entityWeapons, this.ui.WL);
-            renderHelper(this.weapons, equips.RA.equipment.nonCriticals, entityWeapons, this.ui.WL);
-            renderHelper(this.weapons, equips.LL.equipment.nonCriticals, entityWeapons, this.ui.WL);
-            renderHelper(this.weapons, equips.RL.equipment.nonCriticals, entityWeapons, this.ui.WL);
 
             // Ok, the fun stuff.
             var headers = ['Name', 'Minimum Range', 'Short Range', 'Medium Range', 'Long Range'];
@@ -105,13 +101,27 @@ define([
             rawData.push(headers);
 
             collationHelper(this.weapons, equips.HD.equipment.nonCriticals, rawData);
-            collationHelper(this.weapons, equips.LA.equipment.nonCriticals, rawData);
             collationHelper(this.weapons, equips.LT.equipment.nonCriticals, rawData);
             collationHelper(this.weapons, equips.CT.equipment.nonCriticals, rawData);
             collationHelper(this.weapons, equips.RT.equipment.nonCriticals, rawData);
-            collationHelper(this.weapons, equips.RA.equipment.nonCriticals, rawData);
-            collationHelper(this.weapons, equips.LL.equipment.nonCriticals, rawData);
-            collationHelper(this.weapons, equips.RL.equipment.nonCriticals, rawData);
+
+            // missing LA indicates QUAD
+            if (equips.LA) {
+                this.ui.LA.append(entitySlotTemplate(equips.LA));
+                this.ui.RA.append(entitySlotTemplate(equips.RA));
+                this.ui.LL.append(entitySlotTemplate(equips.LL));
+                this.ui.RL.append(entitySlotTemplate(equips.RL));
+
+                renderHelper(this.weapons, equips.LA.equipment.nonCriticals, entityWeapons, this.ui.WL);
+                renderHelper(this.weapons, equips.RA.equipment.nonCriticals, entityWeapons, this.ui.WL);
+                renderHelper(this.weapons, equips.LL.equipment.nonCriticals, entityWeapons, this.ui.WL);
+                renderHelper(this.weapons, equips.RL.equipment.nonCriticals, entityWeapons, this.ui.WL);
+
+                collationHelper(this.weapons, equips.LA.equipment.nonCriticals, rawData);
+                collationHelper(this.weapons, equips.RA.equipment.nonCriticals, rawData);
+                collationHelper(this.weapons, equips.LL.equipment.nonCriticals, rawData);
+                collationHelper(this.weapons, equips.RL.equipment.nonCriticals, rawData);
+            }
 
             var data = google.visualization.arrayToDataTable(rawData);
             var chart = new google.visualization.BarChart(this.ui.weaponRanges[0]);
