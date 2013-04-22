@@ -63,16 +63,26 @@ define([
             HD: '.slot-HD',
             LA: '.slot-LA',
             LT: '.slot-LT',
+            LTR: '.slot-LTR',
             CT: '.slot-CT',
+            CTR: '.slot-CTR',
             RT: '.slot-RT',
+            RTR: '.slot-RTR',
             RA: '.slot-RA',
             LL: '.slot-LL',
             RL: '.slot-RL',
 
-            LTR: '.slot-LTR',
+            FLL: '.slot-FLL',
+            FRL: '.slot-FRL',
+            RLL: '.slot-RLL',
+            RRL: '.slot-RRL',
+
 
             WL: '.weaponList',
-            weaponRanges: '.weaponRange'
+            weaponRanges: '.weaponRange',
+
+            notQuad: '.notQuad',
+            isQuad: '.isQuad'
         },
 
         initialize: function(opts) {
@@ -84,7 +94,43 @@ define([
 
             var equips = this.model.get('location');
 
-            this.ui.HD.append(entitySlotTemplate(equips.HD));
+            var headers = ['Name', 'Minimum Range', 'Short Range', 'Medium Range', 'Long Range'];
+            var rawData = [];
+            rawData.push(headers);
+
+            for (var location in equips) {
+                var payload = equips[location];
+                this.renderSlot(location, payload);
+                renderHelper(this.weapons, payload.equipment.nonCriticals, entityWeapons, this.ui.WL);
+                collationHelper(this.weapons, payload.equipment.nonCriticals, rawData);
+            }
+
+
+            var data = google.visualization.arrayToDataTable(rawData);
+            var chart = new google.visualization.BarChart(this.ui.weaponRanges[0]);
+
+            chart.draw(data,
+                    {title:"Weapon Ranges",
+                        // todo: bind this to el sizes
+                        //                    width: this.$el.width(), height: this.$el.height(),
+                        width: 800, height: 400,
+                        axisTitlesPosition: 'none',
+                        vAxis: {title: ""},
+                        hAxis: {title: "Range Bracket", minorGridlines: 5 },
+                        colors: ['red', 'blue', 'green', 'orange'],
+                        isStacked: false}
+            );
+
+            if (equips.FRL) {
+                this.ui.notQuad.hide();
+                this.ui.isQuad.show();
+            } else {
+                this.ui.notQuad.show();
+                this.ui.isQuad.hide();
+            }
+
+
+            /*this.ui.HD.append(entitySlotTemplate(equips.HD));
 
             this.ui.LT.append(entitySlotTemplate(equips.LT));
             this.ui.CT.append(entitySlotTemplate(equips.CT));
@@ -95,10 +141,7 @@ define([
             renderHelper(this.weapons, equips.CT.equipment.nonCriticals, entityWeapons, this.ui.WL);
             renderHelper(this.weapons, equips.RT.equipment.nonCriticals, entityWeapons, this.ui.WL);
 
-            // Ok, the fun stuff.
-            var headers = ['Name', 'Minimum Range', 'Short Range', 'Medium Range', 'Long Range'];
-            var rawData = [];
-            rawData.push(headers);
+
 
             collationHelper(this.weapons, equips.HD.equipment.nonCriticals, rawData);
             collationHelper(this.weapons, equips.LT.equipment.nonCriticals, rawData);
@@ -121,6 +164,9 @@ define([
                 collationHelper(this.weapons, equips.RA.equipment.nonCriticals, rawData);
                 collationHelper(this.weapons, equips.LL.equipment.nonCriticals, rawData);
                 collationHelper(this.weapons, equips.RL.equipment.nonCriticals, rawData);
+            } else {
+                this.ui.notQuad.hide();
+                this.ui.isQuad.show();
             }
 
             var data = google.visualization.arrayToDataTable(rawData);
@@ -136,8 +182,18 @@ define([
                     hAxis: {title: "Range Bracket", minorGridlines: 5 },
                     colors: ['red', 'blue', 'green', 'orange'],
                     isStacked: false}
-            );
+            );*/
 
+        },
+
+        handleLocation: function(location, payload) {
+            this.renderSlot(location, payload);
+
+        },
+
+        renderSlot: function (location, payload) {
+            var slot = this.ui[location];
+            slot.append(entitySlotTemplate(payload));
         },
 
         appendHtml: function (collectionView, itemView, index) {

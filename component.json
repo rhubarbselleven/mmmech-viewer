@@ -13,7 +13,8 @@
     "marionette": "~1.0.0-rc6",
     "requirejs-tpl": "latest",
     "requirejs-plugins": "latest",
-    "bootstrap.css": "~2.1.1"
+    "bootstrap.css": "~2.1.1",
+    "Chart.js": "git://github.com/nnnick/Chart.js.git"
   },
   "devDependencies": {}
 }

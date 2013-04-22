@@ -1,0 +1,14 @@
+[
+    {"id": "HD", "title": "Head"},
+    {"id": "LA", "title": "Left Arm"},
+    {"id": "LT", "title": "Left Torso"},
+    {"id": "LTR", "title": "Left Torso Rear"},
+    {"id": "CT", "title": "Centre Torso"},
+    {"id": "CTR", "title": "Centre Torso Rear"},
+    {"id": "LL", "title": "Left Leg"},
+    {"id": "FLL", "title": "Front Left Leg"},
+    {"id": "RLL", "title": "Rear Left Leg"},
+    {"id": "RL", "title": "Right Leg"},
+    {"id": "FRL", "title": "Front Right Leg"},
+    {"id": "RRL", "title": "Rear Right Leg"}
+]
