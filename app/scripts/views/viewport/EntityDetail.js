@@ -90,7 +90,6 @@ define([
         },
 
         onRender: function () {
-            console.log("Rendering: " + this.model.id);
 
             var equips = this.model.get('location');
 
