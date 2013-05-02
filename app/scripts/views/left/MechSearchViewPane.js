@@ -22,11 +22,13 @@ define([
         itemView: MechSearchResult,
 
         events: {
-            'keyup .modelSearch ': 'performFilter'
+            'keyup .modelSearch ': 'performFilter',
+            'focus .modelSearch': 'searchFocused'
         },
 
         ui: {
-            search: '.modelSearch'
+            search: '.modelSearch',
+            results: '.modelResults'
         },
 
         initialize: function (opts) {
@@ -53,6 +55,11 @@ define([
                     this.collection.last().select();
                 }
             }
+        },
+
+        searchFocused: function () {
+            this.ui.results.height(200);
+            this.ui.results.show(500);
         },
 
         onClose: function () {
