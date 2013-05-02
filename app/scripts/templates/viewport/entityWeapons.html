@@ -3,10 +3,13 @@
         <td><%= name %></td>
         <td><%= location %></td>
         <td><%= heat %></td>
-        <td><% if (damage < 0) { %>
-            -missile-
-            <% } else { %>
-
+        <td>
+            <% if (damage > 0) { %>
             <%= damage %>
+            <% } else if (damage === -3) { %>
+            -variable-
+            <% } else if (damage === -2) { %>
+            -missile-
+
             <% } %></td>
     </tr>
