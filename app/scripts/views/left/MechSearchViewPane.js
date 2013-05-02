@@ -23,7 +23,8 @@ define([
 
         events: {
             'keyup .modelSearch ': 'performFilter',
-            'focus .modelSearch': 'searchFocused'
+            'focusin .modelSearch': 'searchFocused',
+            'focusout .modelSearch': 'searchLostFocus'
         },
 
         ui: {
@@ -60,6 +61,13 @@ define([
         searchFocused: function () {
             this.ui.results.height(200);
             this.ui.results.show(500);
+        },
+
+        searchLostFocus: function () {
+            if (this.collection.size() === 0) {
+//                this.ui.results.height(200);
+                this.ui.results.hide(500);
+            }
         },
 
         onClose: function () {
