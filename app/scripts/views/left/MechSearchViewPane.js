@@ -60,7 +60,7 @@ define([
         },
 
         log: function (evt) {
-            console.log(evt);
+
         }
 
 
