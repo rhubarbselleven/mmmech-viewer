@@ -90,7 +90,7 @@ define([
             this.weapons = opts.weapons;
         },
 
-        onRender: function () {
+        onDomRefresh: function () {
 
             var equips = this.model.get('location');
 
@@ -112,8 +112,8 @@ define([
             chart.draw(data,
                     {title:"Weapon Ranges",
                         // todo: bind this to el sizes
-                        //                    width: this.$el.width(), height: this.$el.height(),
-                        width: 800, height: 400,
+                        width: this.$el.width(), height: 400,
+//                        width: 800, height: 400,
                         axisTitlesPosition: 'none',
                         vAxis: {title: ""},
                         hAxis: {title: "Range Bracket", minorGridlines: 5 },
