@@ -13,7 +13,8 @@ require.config({
         goog: '../components/requirejs-plugins/src/goog',
         propertyParser: '../components/requirejs-plugins/src/propertyParser',
         text: '../components/requirejs-plugins/lib/text',
-        json: '../components/requirejs-plugins/src/json'
+        json: '../components/requirejs-plugins/src/json',
+        highcharts: '../components/highcharts.com/js/highcharts.src'
 
 
     },
@@ -28,8 +29,12 @@ require.config({
         backbone: {
             deps: ['underscore'],
             exports: 'Backbone'
-        }
+        },
 
+        highcharts: {
+            deps: ['jquery'],
+            exports: 'Highcharts'
+        }
 
     }
 });
