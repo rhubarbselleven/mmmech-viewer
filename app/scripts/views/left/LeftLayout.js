@@ -2,7 +2,7 @@ define([
     'marionette',
 
     'views/left/MechSearchViewPane',
-    'views/left/MechSelectionViewList',
+    'views/left/MechSearchViewList',
 
     'tpl!templates/left/leftLayout.html'
 

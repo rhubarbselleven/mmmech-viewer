@@ -37,13 +37,13 @@ define([
             this.entities = opts.entities;
             this.weapons = opts.weapons;
 
-            this.entities.on('change:selected', this.modelSelected, this);
+            this.entities.on('change:visible', this.modelSelected, this);
         },
 
 
 
         modelSelected: function (model) {
-            if (model.isSelected()) {
+            if (model.isSelected() && model.isVisible()) {
                 this.collection.add(model);
 
                 // only want one selected.

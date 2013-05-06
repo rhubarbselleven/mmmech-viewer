@@ -54,6 +54,7 @@ define([
 
                 if (this.collection.size() === 1) {
                     this.collection.last().select();
+                    this.collection.last().visible();
                 }
             }
         },
