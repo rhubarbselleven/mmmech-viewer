@@ -2,7 +2,7 @@ define([
     'marionette',
 
     'views/left/MechSearchViewPane',
-    'views/left/MechSearchViewList',
+    'views/left/MechSelectionViewList',
 
     'tpl!templates/left/leftLayout.html'
 
@@ -27,7 +27,8 @@ define([
         onRender:function () {
 
             this.search.show(new MechSearchViewPane({entities: this.entities}));
-//            this.search.show(new MechSelectionViewList());
+            this.selection.show(new MechSelectionViewList({entities: this.entities}));
+
         }
     });
 });

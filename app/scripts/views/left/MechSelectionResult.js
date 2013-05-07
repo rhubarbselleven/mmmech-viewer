@@ -7,7 +7,7 @@
 define([
     'marionette',
 
-    'tpl!templates/left/mechSearchPaneDetail.html'
+    'tpl!templates/left/mechSelectionPaneDetail.html'
 ], function (Marionette, template) {
     "use strict";
 
@@ -19,6 +19,10 @@ define([
         events: {
             'click .close': 'handleClose',
             'click': 'setVisible'
+        },
+
+        initialize: function () {
+
         },
 
 
