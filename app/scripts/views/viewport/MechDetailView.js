@@ -45,14 +45,6 @@ define([
         modelSelected: function (model) {
             if (model.isSelected() && model.isVisible()) {
                 this.collection.add(model);
-
-                // only want one selected.
-                this.collection.each(function(m){
-                    if (m.id != model.id) {
-                        m.set('selected', false);
-                    }
-                });
-
             } else {
                 this.collection.remove(model);
             }

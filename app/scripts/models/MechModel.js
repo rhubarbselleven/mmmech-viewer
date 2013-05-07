@@ -17,7 +17,7 @@ define([
         select:function (state) {
 
             // not supplied implies true
-            if (!!state) {
+            if (state === undefined) {
                 this.select(true);
             } else {
                 this.set('selected', state);
@@ -27,7 +27,7 @@ define([
         visible:function (state) {
 
             // not supplied implies true
-            if (!!state) {
+            if (state === undefined) {
                 this.visible(true);
             } else {
                 this.set('visible', state);
