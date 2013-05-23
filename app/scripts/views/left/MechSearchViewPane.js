@@ -46,7 +46,7 @@ define([
             } else {
 
                 var filter = this.entities.filter(function (model) {
-                    return model.id.substr(0, val.length) === val;
+                    return model.id.substr(0, val.length).toUpperCase() === val;
                 });
 
                 // just reset with our known stuff. let events handle it all.
