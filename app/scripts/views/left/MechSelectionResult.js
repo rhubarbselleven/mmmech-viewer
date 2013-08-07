@@ -19,6 +19,7 @@ define([
         events: {
             'click .close': 'handleClose',
             'click': 'setVisible'
+
         },
 
         initialize: function () {

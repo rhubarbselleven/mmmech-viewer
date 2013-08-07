@@ -26,7 +26,7 @@ define([
         emptyView: EmptyView,
 
         itemView: EntityDetailView,
-        itemViewOptions: function() {
+        itemViewOptions: function () {
             return {weapons: this.weapons};
         },
 //        itemViewContainer: '.selectedEntities',
@@ -37,13 +37,15 @@ define([
             this.entities = opts.entities;
             this.weapons = opts.weapons;
 
+            this.entities.on('change:selected', this.modelSelected, this);
             this.entities.on('change:visible', this.modelSelected, this);
         },
 
 
-
         modelSelected: function (model) {
-            if (model.isSelected() && model.isVisible()) {
+
+            if (model.isSelected()) {
+                this.collection.pop();
                 this.collection.add(model);
             } else {
                 this.collection.remove(model);
