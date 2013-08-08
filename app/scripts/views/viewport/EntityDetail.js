@@ -11,7 +11,7 @@ define([
     'tpl!templates/viewport/entityDetail.html',
     'tpl!templates/viewport/entitySlot.html',
     'tpl!templates/viewport/entityWeapons.html',
-    'highcharts'
+    'goog!visualization,1,packages:[corechart]'
 ], function (_, Marionette, entityTemplate, entitySlotTemplate, entityWeapons) {
     "use strict";
 
@@ -30,30 +30,31 @@ define([
         _.each(forThese, function(v, i) {
             var w = searchThis[v];
             if (!!w) {
-                var t = {};
+                var t = [];
 
                 // name is easy
-                t.name = v;
+                t.push(v);
 
                 // min range
                 if (w.minimumRange == undefined) {
                     w.minimumRange = 0;
                 }
-                t.minimumRange = (w.minimumRange);
+                t.push(w.minimumRange);
 
                 // short range
-                t.shortRange = (w.shortRange);
+                t.push(w.shortRange);
 
                 // medium range
-                t.mediumRange = (w.mediumRange);
+                t.push(w.mediumRange);
 
                 // long range
-                t.longRange = (w.longRange);
+                t.push(w.longRange);
 
 
                 collateToThis.push(t);
             }
         });
+
     }
 
     return Marionette.ItemView.extend({
@@ -93,7 +94,9 @@ define([
 
             var equips = this.model.get('location');
 
+            var headers = ['Name', 'Minimum Range', 'Short Range', 'Medium Range', 'Long Range'];
             var rawData = [];
+            rawData.push(headers);
 
             for (var location in equips) {
                 var payload = equips[location];
@@ -102,33 +105,21 @@ define([
                 collationHelper(this.weapons, payload.equipment.nonCriticals, rawData);
             }
 
-            var series = [
-                { name:'Minimum Range', data:_.pluck(rawData, 'minimumRange'), color: 'black'},
-                { name:'Short Range', data:_.pluck(rawData, 'shortRange'), color: 'blue'},
-                { name:'Medium Range', data:_.pluck(rawData, 'mediumRange'), color: 'green'},
-                { name:'Long Range', data:_.pluck(rawData, 'longRange'), color: 'orange'}
-            ];
 
+            var data = google.visualization.arrayToDataTable(rawData);
+            var chart = new google.visualization.BarChart(this.ui.weaponRanges[0]);
 
-
-            this.ui.weaponRanges.highcharts({
-                chart: {
-                    type: 'bar'
-                },
-                title: {
-                    text: 'Weapon Ranges'
-                },
-                xAxis: {
-                    categories:_.pluck(rawData, 'name')
-                },
-                yAxis: {
-                    title: {
-                        text: 'Range'
-                    }
-                },
-
-                series: series
-            });
+            chart.draw(data,
+                    {title:"Weapon Ranges",
+                        // todo: bind this to el sizes
+                        width: this.$el.width(), height: 400,
+//                        width: 800, height: 400,
+                        axisTitlesPosition: 'none',
+                        vAxis: {title: ""},
+                        hAxis: {title: "Range Bracket", minorGridlines: 5 },
+                        colors: ['red', 'blue', 'green', 'orange'],
+                        isStacked: false}
+            );
 
             if (equips.FRL) {
                 this.ui.notQuad.hide();
