@@ -8,39 +8,50 @@ define([
     'marionette',
     'collections/EntityCollection',
 
-    'views/left/MechSelectionResult',
+    'views/left/MechSearchResult',
 
-    'tpl!templates/left/mechSelectionPane.html'
-], function (Marionette, EntityCollection, MechSelectionResult, template) {
+    'tpl!templates/left/mechSearchPane.html'
+], function (Marionette, EntityCollection, MechSearchResult, template) {
     "use strict";
 
     return Marionette.CompositeView.extend({
 
         template: template,
 
-        itemViewContainer: '.selectionResults ul',
-        itemView: MechSelectionResult,
+        itemViewContainer: '.modelResults ul',
+        itemView: MechSearchResult,
 
         events: {
-
+            'keyup .modelSearch ': 'performFilter'
         },
 
         ui: {
-
+            search: '.modelSearch'
         },
 
         initialize: function (opts) {
             this.collection = new EntityCollection();
             this.entities = opts.entities;
-
-            this.listenTo(this.entities, 'change:selected', this.selectionChanged, this);
         },
 
-        selectionChanged: function (model) {
-            if (model.isSelected()) {
-                this.collection.add(model);
+        performFilter: function (evt) {
+            var val = this.ui.search.val().toUpperCase();
+
+            if (val.trim() === '') {
+                // if it's blank, don't want to render the entire thing.
+                this.collection.reset();
             } else {
-                this.collection.remove(model);
+
+                var filter = this.entities.filter(function (model) {
+                    return model.id.substr(0, val.length) === val;
+                });
+
+                // just reset with our known stuff. let events handle it all.
+                this.collection.reset(filter);
+
+                if (this.collection.size() === 1) {
+                    this.collection.last().select();
+                }
             }
         },
 

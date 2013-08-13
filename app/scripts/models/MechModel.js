@@ -6,42 +6,21 @@ define([
     "use strict";
 
     return Backbone.Model.extend({
-        defaults:{
-            selected:false,
-            visible:false, // Hmm...
-            filtered:false // Yeah!
+        defaults: {
+            selected: false,
+            visible: false, // Hmm...
+            filtered: false // Yeah!
         },
 
-        idAttribute:'model',
+        idAttribute: 'model',
 
-        select:function (state) {
-
-            // not supplied implies true
-            if (state === undefined) {
-                this.select(true);
-            } else {
-                this.set('selected', state);
-            }
+        select: function () {
+            this.set('selected', true);
         },
 
-        visible:function (state) {
-
-            // not supplied implies true
-            if (state === undefined) {
-                this.visible(true);
-            } else {
-                this.set('visible', state);
-            }
-        },
-
-        isSelected:function () {
+        isSelected: function () {
             return this.get('selected');
-        },
-
-        isVisible:function () {
-            return this.get('visible');
         }
-
 
 
 

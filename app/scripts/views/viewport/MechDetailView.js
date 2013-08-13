@@ -38,15 +38,20 @@ define([
             this.weapons = opts.weapons;
 
             this.entities.on('change:selected', this.modelSelected, this);
-            this.entities.on('change:visible', this.modelSelected, this);
         },
 
 
         modelSelected: function (model) {
-
             if (model.isSelected()) {
-                this.collection.pop();
                 this.collection.add(model);
+
+                // only want one selected.
+                this.collection.each(function (m) {
+                    if (m.id != model.id) {
+                        m.set('selected', false);
+                    }
+                });
+
             } else {
                 this.collection.remove(model);
             }

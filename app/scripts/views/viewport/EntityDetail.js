@@ -11,50 +11,49 @@ define([
     'tpl!templates/viewport/entityDetail.html',
     'tpl!templates/viewport/entitySlot.html',
     'tpl!templates/viewport/entityWeapons.html',
-    'goog!visualization,1,packages:[corechart]'
+    'highcharts'
 ], function (_, Marionette, entityTemplate, entitySlotTemplate, entityWeapons) {
     "use strict";
 
     function renderHelper(searchThis, forThese, renderThis, inThis, location) {
-        _.each(forThese, function(v, i) {
+        _.each(forThese, function (v, i) {
             var w = searchThis[v];
             if (!!w) {
                 w.name = v;
                 w.location = location;
                 inThis.append(renderThis(w));
             }
-        }) ;
+        });
     }
 
     function collationHelper(searchThis, forThese, collateToThis) {
-        _.each(forThese, function(v, i) {
+        _.each(forThese, function (v, i) {
             var w = searchThis[v];
             if (!!w) {
-                var t = [];
+                var t = {};
 
                 // name is easy
-                t.push(v);
+                t.name = v;
 
                 // min range
                 if (w.minimumRange == undefined) {
                     w.minimumRange = 0;
                 }
-                t.push(w.minimumRange);
+                t.minimumRange = (w.minimumRange);
 
                 // short range
-                t.push(w.shortRange);
+                t.shortRange = (w.shortRange);
 
                 // medium range
-                t.push(w.mediumRange);
+                t.mediumRange = (w.mediumRange);
 
                 // long range
-                t.push(w.longRange);
+                t.longRange = (w.longRange);
 
 
                 collateToThis.push(t);
             }
         });
-
     }
 
     return Marionette.ItemView.extend({
@@ -86,7 +85,7 @@ define([
             isQuad: '.isQuad'
         },
 
-        initialize: function(opts) {
+        initialize: function (opts) {
             this.weapons = opts.weapons;
         },
 
@@ -94,9 +93,7 @@ define([
 
             var equips = this.model.get('location');
 
-            var headers = ['Name', 'Minimum Range', 'Short Range', 'Medium Range', 'Long Range'];
             var rawData = [];
-            rawData.push(headers);
 
             for (var location in equips) {
                 var payload = equips[location];
@@ -105,21 +102,32 @@ define([
                 collationHelper(this.weapons, payload.equipment.nonCriticals, rawData);
             }
 
+            var series = [
+                { name: 'Minimum Range', data: _.pluck(rawData, 'minimumRange'), color: 'black'},
+                { name: 'Short Range', data: _.pluck(rawData, 'shortRange'), color: 'blue'},
+                { name: 'Medium Range', data: _.pluck(rawData, 'mediumRange'), color: 'green'},
+                { name: 'Long Range', data: _.pluck(rawData, 'longRange'), color: 'orange'}
+            ];
 
-            var data = google.visualization.arrayToDataTable(rawData);
-            var chart = new google.visualization.BarChart(this.ui.weaponRanges[0]);
 
-            chart.draw(data,
-                    {title:"Weapon Ranges",
-                        // todo: bind this to el sizes
-                        width: this.$el.width(), height: 400,
-//                        width: 800, height: 400,
-                        axisTitlesPosition: 'none',
-                        vAxis: {title: ""},
-                        hAxis: {title: "Range Bracket", minorGridlines: 5 },
-                        colors: ['red', 'blue', 'green', 'orange'],
-                        isStacked: false}
-            );
+            this.ui.weaponRanges.highcharts({
+                chart: {
+                    type: 'bar'
+                },
+                title: {
+                    text: 'Weapon Ranges'
+                },
+                xAxis: {
+                    categories: _.pluck(rawData, 'name')
+                },
+                yAxis: {
+                    title: {
+                        text: 'Range'
+                    }
+                },
+
+                series: series
+            });
 
             if (equips.FRL) {
                 this.ui.notQuad.hide();
@@ -131,7 +139,7 @@ define([
 
         },
 
-        handleLocation: function(location, payload) {
+        handleLocation: function (location, payload) {
             this.renderSlot(location, payload);
 
         },

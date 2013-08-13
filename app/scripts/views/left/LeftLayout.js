@@ -10,25 +10,24 @@ define([
     "use strict";
 
     return Marionette.Layout.extend({
-        template:template,
+        template: template,
 
-        regions:{
-            search:".searchPane",
-            selection:".selectionPane"
+        regions: {
+            search: ".searchPane",
+            selection: ".selectionPane"
         },
 
-        initialize:function (opts) {
+        initialize: function (opts) {
             this.entities = opts.entities;
 
 //            this.search.show(new MechSearchViewPane(opts));
 //            this.selection.show(new MechSelectionViewList());
         },
 
-        onRender:function () {
+        onRender: function () {
 
             this.search.show(new MechSearchViewPane({entities: this.entities}));
-            this.selection.show(new MechSelectionViewList({entities: this.entities}));
-
+//            this.search.show(new MechSelectionViewList());
         }
     });
 });
