@@ -1,4 +1,4 @@
-// Generated on 2013-02-27 using generator-webapp 0.1.5
+// Generated on 2013-03-04 using generator-webapp 0.1.5
 'use strict';
 var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
 var mountFolder = function (connect, dir) {
@@ -24,14 +24,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         yeoman: yeomanConfig,
         watch: {
-            coffee: {
-                files: ['<%= yeoman.app %>/scripts/{,*/}*.coffee'],
-                tasks: ['coffee:dist']
-            },
-            coffeeTest: {
-                files: ['test/spec/{,*/}*.coffee'],
-                tasks: ['coffee:test']
-            },
+
             compass: {
                 files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
                 tasks: ['compass']
@@ -41,6 +34,8 @@ module.exports = function (grunt) {
                     '<%= yeoman.app %>/*.html',
                     '{.tmp,<%= yeoman.app %>}/styles/{,*/}*.css',
                     '{.tmp,<%= yeoman.app %>}/scripts/{,*/}*.js',
+                    '{.tmp,<%= yeoman.app %>}/scripts/templates/{,*/}*.html',
+                    '{.tmp,<%= yeoman.app %>}/test/spec/{,*/}*.js',
                     '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,webp}'
                 ],
                 tasks: ['livereload']
@@ -48,9 +43,8 @@ module.exports = function (grunt) {
         },
         connect: {
             options: {
-                port: 9999,
+                port: 9000,
                 // change this to '0.0.0.0' to access the server from outside
-                // hostname: '0.0.0.0'
                 hostname: 'localhost'
             },
             livereload: {
@@ -59,7 +53,8 @@ module.exports = function (grunt) {
                         return [
                             lrSnippet,
                             mountFolder(connect, '.tmp'),
-                            mountFolder(connect, 'app')
+                            mountFolder(connect, 'app'),
+                            mountFolder(connect, '.')
                         ];
                     }
                 }
@@ -69,6 +64,7 @@ module.exports = function (grunt) {
                     middleware: function (connect) {
                         return [
                             mountFolder(connect, '.tmp'),
+                            mountFolder(connect, '.'),
                             mountFolder(connect, 'test')
                         ];
                     }
@@ -107,34 +103,10 @@ module.exports = function (grunt) {
         mocha: {
             all: {
                 options: {
-                    run: true,
-                    urls: ['http://localhost:<%= connect.options.port %>/index.html']
+                    run: false,
+                    reporter: 'spec',
+                    urls: ['http://localhost:<%= connect.options.port %>/test/index.html']
                 }
-            }
-        },
-        coffee: {
-            dist: {
-                files: [
-                    {
-                        // rather than compiling multiple files here you should
-                        // require them into your main .coffee file
-                        expand: true,
-                        cwd: '<%= yeoman.app %>/scripts',
-                        src: '*.coffee',
-                        dest: '.tmp/scripts',
-                        ext: '.js'
-                    }
-                ]
-            },
-            test: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: '.tmp/spec',
-                        src: '*.coffee',
-                        dest: 'test/spec'
-                    }
-                ]
             }
         },
         compass: {
@@ -175,6 +147,7 @@ module.exports = function (grunt) {
                     useStrict: true,
                     wrap: true,
                     //uglify2: {} // https://github.com/mishoo/UglifyJS2
+                    mainConfigFile: yeomanConfig.app + '/scripts/config.js'
                 }
             }
         },
@@ -196,9 +169,9 @@ module.exports = function (grunt) {
                 files: [
                     {
                         expand: true,
-                        cwd: '<%= yeoman.app %>/images',
+                        cwd: '<%= yeoman.app %>/data/img',
                         src: '{,*/}*.{png,jpg,jpeg}',
-                        dest: '<%= yeoman.dist %>/images'
+                        dest: '<%= yeoman.dist %>/data/img'
                     }
                 ]
             }
@@ -254,8 +227,21 @@ module.exports = function (grunt) {
         },
         bower: {
             all: {
-                rjsConfig: '<%= yeoman.app %>/scripts/main.js'
+                rjsConfig: '<%= yeoman.app %>/scripts/config.js'
             }
+        },
+        concurrent: {
+            server: [
+                'compass:server'
+            ],
+            test: [
+//                'compass'
+            ],
+            dist: [
+                'compass:dist',
+                'imagemin',
+                'htmlmin'
+            ]
         }
     });
 
@@ -268,8 +254,7 @@ module.exports = function (grunt) {
 
         grunt.task.run([
             'clean:server',
-            'coffee:dist',
-            'compass:server',
+            'concurrent:server',
             'livereload-start',
             'connect:livereload',
             'open',
@@ -279,23 +264,22 @@ module.exports = function (grunt) {
 
     grunt.registerTask('test', [
         'clean:server',
-        'coffee',
-        'compass',
+
+        'concurrent:test',
         'connect:test',
         'mocha'
     ]);
 
     grunt.registerTask('build', [
         'clean:dist',
-        'coffee',
-        'compass:dist',
+        'concurrent:dist',
         'useminPrepare',
         'requirejs',
         'imagemin',
         'htmlmin',
         'concat',
         'cssmin',
-        'uglify',
+//        'uglify',
         'copy',
         'usemin'
     ]);
@@ -304,5 +288,10 @@ module.exports = function (grunt) {
         'jshint',
         'test',
         'build'
+    ]);
+
+    grunt.registerTask('travis', [
+        'jshint',
+        'test'
     ]);
 };
