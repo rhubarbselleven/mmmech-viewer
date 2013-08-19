@@ -93,13 +93,20 @@ define([
 
             var equips = this.model.get('location');
 
+            var clanOrIS;
+            if (this.model.get('isClan')) {
+                clanOrIS = 'clan';
+            } else {
+                clanOrIS = 'is';
+            }
+
             var rawData = [];
 
             for (var location in equips) {
                 var payload = equips[location];
                 this.renderSlot(location, payload);
-                renderHelper(this.weapons, payload.equipment.nonCriticals, entityWeapons, this.ui.WL, location);
-                collationHelper(this.weapons, payload.equipment.nonCriticals, rawData);
+                renderHelper(this.weapons[clanOrIS], payload.equipment.nonCriticals, entityWeapons, this.ui.WL, location);
+                collationHelper(this.weapons[clanOrIS], payload.equipment.nonCriticals, rawData);
             }
 
             var series = [

@@ -5,8 +5,6 @@
     <div class="entityDamages span4">
 
         <dl class="dl-horizontal">
-            <dt>Year</dt>
-            <dd><%= year %></dd>
             <dt>Weight Class</dt>
             <dd><%= weightClass %></dd>
             <dt>Weight</dt>
@@ -16,16 +14,56 @@
             <dd><%= bv %></dd>
 
             <dt>Movement</dt>
-            <dd><%= movement %></dd>
+            <dd><%= movement.walk %>/<%= movement.runString %>/<%= movement.jump %></dd>
 
             <dt>Heat Capacity</dt>
             <dd><%= heat %></dd>
 
+            <dt>Armor Type</dt>
+            <dd><%= armorType %></dd>
+            <dt>Internal Structure</dt>
+            <dd><%= structureType %></dd>
+            <dt>Engine</dt>
+            <dd><%= engine %></dd>
+
+            <dt>Cockpit</dt>
+            <dd><%= cockpitType %></dd>
+            <dt>Gyro</dt>
+            <dd><%= gyroType %></dd>
+
+            <dt>Year</dt>
+            <dd><%= year %></dd>
         </dl>
 
 
     </div>
+
+
     <div class="span8">
+
+        <% if (misc.length > 0) { %>
+        <table class="table table-hover table-condensed">
+            <thead>
+            <tr>
+                <th>Equipment</th>
+                <th>Location</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <% for (var i = 0; i < misc.length; i++) {
+                var t = misc[i];
+            %>
+            <tr>
+                <td><%= t.equip %></td>
+                <td><%= t.loc %></td>
+            </tr>
+            <% } %>
+            </tbody>
+        </table>
+
+        <% } %>
+
         <table class="table table-hover table-condensed">
 
             <thead>
