@@ -147,7 +147,7 @@ module.exports = function (grunt) {
                     useStrict: true,
                     wrap: true,
                     //uglify2: {} // https://github.com/mishoo/UglifyJS2
-                    mainConfigFile: yeomanConfig.app + '/scripts/config.js'
+                    mainConfigFile: yeomanConfig.app + '/scripts/main.js'
                 }
             }
         },

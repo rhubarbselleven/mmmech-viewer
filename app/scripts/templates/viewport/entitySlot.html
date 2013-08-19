@@ -6,7 +6,13 @@
         <strong class="text-error">Critical Slots</strong>
         <ul class="unstyled">
             <% _.each(equipment.criticals, function(crit) { %>
-            <li><%= crit %></li>
+            <li><% if ('.E' !== crit) { %>
+                <%= crit %>
+                <% } else { %>
+                -- Empty --
+                <% } %>
+            </li>
+
             <% }); %>
         </ul>
     </li>
