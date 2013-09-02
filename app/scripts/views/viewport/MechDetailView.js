@@ -7,13 +7,13 @@
 define([
     'marionette',
     'collections/EntityCollection',
-    'views/viewport/EntityDetail',
+    'views/viewport/UnitDetail',
 
     'tpl!templates/viewport/entity.html',
     'tpl!templates/viewport/introduction.html'
 
 
-], function (Marionette, EntityCollection, EntityDetailView, entityTemplate, emptyViewTemplate) {
+], function (Marionette, EntityCollection, UnitDetail, entityTemplate, emptyViewTemplate) {
     "use strict";
 
     var EmptyView = Marionette.ItemView.extend({
@@ -25,7 +25,7 @@ define([
 
         emptyView: EmptyView,
 
-        itemView: EntityDetailView,
+        itemView: UnitDetail,
         itemViewOptions: function () {
             return {weapons: this.weapons};
         },

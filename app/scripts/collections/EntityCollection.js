@@ -3,7 +3,7 @@ define([
     'underscore',
     'backbone',
 
-    'models/MechModel'
+    'models/UnitModel'
 ], function (_, Backbone, MechModel) {
     "use strict";
 
