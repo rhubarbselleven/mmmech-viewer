@@ -18,7 +18,7 @@ define([
     var controller = {
         select: function (term) {
             entityCollection.on('sync', function () {
-                var model = entityCollection.get(term);
+                var model = entityCollection.get({shortName: term});
                 if (!!model) {
                     model.select();
                 }

@@ -45,10 +45,13 @@ define([
                 this.collection.reset();
             } else {
 
+//                var regex = new RegExp(val, "i");
+
                 var filter = this.entities.filter(function (model) {
-                    // todo: fix name of chassis
-                    return model.id.substr(0, val.length).toUpperCase() === val
-                        || model.get('chasis').substr(0, val.length).toUpperCase() === val;
+
+//                    return regex.test(model.get('shortName'));
+                    return model.get('model').substr(0, val.length).toUpperCase() === val
+                        || model.get('chassis').substr(0, val.length).toUpperCase() === val;
                 });
 
                 // just reset with our known stuff. let events handle it all.
