@@ -14,3 +14,5 @@ Draconis Combine (-1175/39525), Word of Blake (-450/17350), Crusader Clans (-290
 Draconis Combine (-1175/39525), Crusader Clans (-715/4985), Word of Blake (-300/17500), Free Worlds League (-275/39425), Mercenary (0/100), Capellan Confederation (+75/28175), Rasalhague Republic (+425/18125), Warden Clans (+515/5915), Lyran Alliance (+600/51100), Federated Suns (+850/58350).
 08:20 12/09
 Draconis Combine (-1100/39600), Crusader Clans (-705/4995), Free Worlds League (-400/39300), Word of Blake (-325/17475), Mercenary (0/100), Capellan Confederation (+250/28350), Rasalhague Republic (+350/18050), Warden Clans (+505/5905), Lyran Alliance (+575/51075), Federated Suns (+850/58350).
+08:20  13/09
+Draconis Combine (-1025/39675), Crusader Clans (-500/5200), Free Worlds League (-450/39250), Word of Blake (-375/17425), Capellan Confederation (-100/28000), Mercenary (0/100), Rasalhague Republic (+425/18125), Lyran Alliance (+575/51075), Warden Clans (+600/6000), Federated Suns (+1150/58650).
