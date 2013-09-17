@@ -1,0 +1,30 @@
+<dl class="dl-horizontal">
+
+    <dt>Battle Armor</dt>
+    <dd><%= shortName %></dd>
+
+    <dt>TRO</dt>
+    <dd><%= set %></dd>
+    <dt>Year</dt>
+    <dd><%= year %></dd>
+
+    <dt>Weight Class</dt>
+    <dd><span class="label label-info">Remember to sort this</span></dd>
+
+    <dt>Weight</dt>
+    <dd><%= weight %></dd>
+
+    <dt>BV</dt>
+    <dd><%= bv %></dd>
+
+    <dt>Movement</dt>
+    <dd><%= movement.w %>/<%= movement.rs %>/<%= movement.j %></dd>
+    <dt>Burdened</dt>
+    <dd><% if (burdened) {%> Yes <% } else { %> No <% } %></dd>
+
+    <dt>Total Armor</dt>
+    <dd><%= totalExternalArmor %></dd>
+    <dt>Squad Size</dt>
+    <dd><%= squadSize %></dd>
+
+</dl>

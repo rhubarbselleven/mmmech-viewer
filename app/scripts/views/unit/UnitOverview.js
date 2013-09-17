@@ -8,10 +8,27 @@
 define([
     'marionette',
 
-    'tpl!templates/unit/default.html'
+    'tpl!templates/unit/default.html',
+    'tpl!templates/unit/mechOverview.html',
+    'tpl!templates/unit/veeOverview.html',
+    'tpl!templates/unit/baOverview.html'
 
-], function (Marionette, template) {
+], function (Marionette, fakeTemplate, mechOverview, veeOverview, baOverview) {
     return Marionette.ItemView.extend({
-        template: template
+        // template: template,
+
+        getTemplate: function () {
+            var unitType = this.model.get('unitType');
+            if (unitType === "mech") {
+                return mechOverview;
+            } else if (unitType === "vee") {
+                return veeOverview;
+            } else if (unitType === "BA") {
+                return baOverview;
+            } else {
+                return fakeTemplate;
+            }
+        }
+
     });
 });
