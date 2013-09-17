@@ -1,5 +1,6 @@
 <dl class="dl-horizontal">
-
+    <dt>Unit Type</dt>
+    <dd>Battle Armor</dd>
     <dt>Battle Armor</dt>
     <dd><%= shortName %></dd>
 
@@ -18,7 +19,11 @@
     <dd><%= bv %></dd>
 
     <dt>Movement</dt>
-    <dd><%= movement.w %>/<%= movement.rs %>/<%= movement.j %></dd>
+    <dd><%= movement.w %>/<%= movement.rs %>
+        <% if (movement.j > 0) $>
+        /<%= movement.j %>
+        <% } %>
+    </dd>
     <dt>Burdened</dt>
     <dd><% if (burdened) {%> Yes <% } else { %> No <% } %></dd>
 

@@ -1,4 +1,13 @@
 <dl class="dl-horizontal">
+    <dt>Unit Type</dt>
+    <dd>Mech
+    <%if (isQuad) { %>
+        <span class="label label-success">Quad</span>
+        <% }
+        if (isOmni) { %>
+        <span class="label label-warning">Omni</span>
+        <% } %>
+    </dd>
     <dt>Chassis</dt>
     <dd><%= chassis %></dd>
     <dt>Model</dt>
@@ -17,7 +26,11 @@
     <dd><%= bv %></dd>
 
     <dt>Movement</dt>
-    <dd><%= movement.w %>/<%= movement.rs %>/<%= movement.j %></dd>
+    <dd><%= movement.w %>/<%= movement.rs %>
+        <% if (movement.j > 0) $>
+        /<%= movement.j %>
+        <% } %>
+    </dd>
 
     <dt>Heat Capacity</dt>
     <dd><%= heatCapacity %></dd>
