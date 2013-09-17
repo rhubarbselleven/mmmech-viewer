@@ -1,0 +1,57 @@
+{"isClan": false, "model": "G", "weight": 100, "sys": null, "set": "IS TW non-box set", "img": "Claymore.png", "armor": {
+    "RR": [
+        {
+            "e": 24,
+            "i": 10
+        }
+    ],
+    "RS": [
+        {
+            "e": 55,
+            "i": 10
+        }
+    ],
+    "FR": [
+        {
+            "e": 70,
+            "i": 10
+        }
+    ],
+    "TU": [
+        {
+            "e": 55,
+            "i": 10
+        }
+    ],
+    "LS": [
+        {
+            "e": 55,
+            "i": 10
+        }
+    ]
+}, "bv": 1466, "heatCapacity": 20, "equips": {
+    "BD": ["Guardian ECM Suite", "Beagle Active Probe", "C3 Slave"]
+}, "heatSinks": 10, "chassis": "Claymore", "cockpit": "Standard Cockpit", "movement": {
+    "w": 2,
+    "r": 3,
+    "rs": "3",
+    "j": 0,
+    "re": 3
+}, "totalExternalArmor": "259", "totalInternalArmor": "50", "weapons": {
+    "TU": ["Light Gauss Rifle", "Light Gauss Rifle", "Light Gauss Rifle", "Light Gauss Rifle", "Medium Laser", "Medium Laser", "Medium Laser"]
+}, "year": 3063, "isOmni": true, "structureType": "Endo Steel", "unitType": "vee", "engine": "200 XL", "isQuad": false, "cost": 15461667, "ammo": {
+    "BD": [
+        {
+            "t": "Light Gauss Ammo",
+            "c": 16
+        },
+        {
+            "t": "Light Gauss Ammo",
+            "c": 16
+        },
+        {
+            "t": "Light Gauss Ammo",
+            "c": 16
+        }
+    ]
+}, "weightClass": "Medium", "armorType": "Ferro-Fibrous", "gyro": "Standard Gyro", "fluff": "", "shortName": "Claymore G", "selected": true, "visible": false, "filtered": false, "hasTurrent": true, "movementType": "Tracked"}

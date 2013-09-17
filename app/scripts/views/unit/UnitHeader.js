@@ -8,7 +8,7 @@
 define([
     'marionette',
 
-    'tpl!templates/unit/default.html'
+    'tpl!templates/unit/header.html'
 
 ], function (Marionette, template) {
     return Marionette.ItemView.extend({

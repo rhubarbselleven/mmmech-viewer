@@ -5,7 +5,6 @@
  * Time: 10:56 PM
  */
 define([
-    'underscore',
     'marionette',
 
     'tpl!templates/viewport/unitLayout.html',
@@ -16,8 +15,7 @@ define([
     'views/unit/UnitWeapons',
     'views/unit/UnitRanges',
     'views/unit/UnitSlotLayout'
-], function (_, Marionette, template, UnitHeader, UnitOverview, UnitEquipment, UnitAmmo, UnitWeapons, UnitRanges, UnitSlotLayout) {
-
+], function (Marionette, template, UnitHeader, UnitOverview, UnitEquipment, UnitAmmo, UnitWeapons, UnitRanges, UnitSlotLayout) {
     "use strict";
 
     return Marionette.Layout.extend({
@@ -38,13 +36,14 @@ define([
         },
 
         onRender: function () {
-            this.header.show(new UnitHeader(this.model));
-            this.overview.show(new UnitOverview(this.model));
-            this.equipment.show(new UnitEquipment(this.model));
-            this.ammo.show(new UnitAmmo(this.model));
-            this.weaponry.show(new UnitWeapons(this.model));
-            this.ranges.show(new UnitRanges(this.model));
-            this.slotLayout.show(new UnitSlotLayout(this.model))
+            var model = {model: this.model};
+            this.header.show(new UnitHeader(model));
+            this.overview.show(new UnitOverview(model));
+            this.equipment.show(new UnitEquipment(model));
+            this.ammo.show(new UnitAmmo(model));
+            this.weaponry.show(new UnitWeapons(model));
+            this.ranges.show(new UnitRanges(model));
+            this.slotLayout.show(new UnitSlotLayout(model))
         }
 
     });

@@ -26,11 +26,10 @@ define([
         emptyView: EmptyView,
 
         itemView: UnitDetail,
+
         itemViewOptions: function () {
             return {weapons: this.weapons};
         },
-//        itemViewContainer: '.selectedEntities',
-
 
         initialize: function (opts) {
             this.collection = new EntityCollection();
