@@ -9,32 +9,43 @@ define([
     'marionette',
 
     'tpl!templates/viewport/unitLayout.html',
-    'tpl!templates/viewport/entitySlot.html',
-    'tpl!templates/viewport/entityWeapons.html',
-    'highcharts'
-], function (_, Marionette, unitLayout, entitySlotTemplate, entityWeapons) {
+    'views/unit/UnitHeader',
+    'views/unit/UnitOverview',
+    'views/unit/UnitEquipment',
+    'views/unit/UnitAmmo',
+    'views/unit/UnitWeapons',
+    'views/unit/UnitRanges',
+    'views/unit/UnitSlotLayout'
+], function (_, Marionette, template, UnitHeader, UnitOverview, UnitEquipment, UnitAmmo, UnitWeapons, UnitRanges, UnitSlotLayout) {
+
     "use strict";
 
     return Marionette.Layout.extend({
-        template: unitLayout,
+        template: template,
 
         regions: {
             header: ".header",
             overview: ".overview",
             equipment: ".equipment",
             ammo: ".ammo",
-            weapons: ".weapons",
+            weaponry: ".weaponry",
             ranges: ".ranges",
-            layout: ".unitLayout"
-
+            slotLayout: ".slotLayout"
         },
-
 
         initialize: function (opts) {
             this.weapons = opts.weapons;
+        },
+
+        onRender: function () {
+            this.header.show(new UnitHeader(this.model));
+            this.overview.show(new UnitOverview(this.model));
+            this.equipment.show(new UnitEquipment(this.model));
+            this.ammo.show(new UnitAmmo(this.model));
+            this.weaponry.show(new UnitWeapons(this.model));
+            this.ranges.show(new UnitRanges(this.model));
+            this.slotLayout.show(new UnitSlotLayout(this.model))
         }
-
-
 
     });
 });

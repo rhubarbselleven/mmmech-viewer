@@ -7,7 +7,7 @@
 define([
     'marionette',
     'collections/EntityCollection',
-    'views/viewport/UnitDetail',
+    'views/viewport/UnitLayout',
 
     'tpl!templates/viewport/entity.html',
     'tpl!templates/viewport/introduction.html'
