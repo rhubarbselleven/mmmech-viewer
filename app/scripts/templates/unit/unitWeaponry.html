@@ -1,21 +1,25 @@
-<% if (!_.isEmpty(equips)) { %>
+<% if (!_.isEmpty(weapons)) { %>
 <h3>Weaponry</h3>
 <table class="table table-hover table-condensed">
     <thead>
     <tr>
         <th>Location</th>
-        <th>Equipment</th>
+        <th>Weapon</th>
+        <th>Heat</th>
+        <th>Damage</th>
     </tr>
     </thead>
 
     <tbody>
-    <% _.each(equips, function (value, key) { %>
-
+    <% _.each(weapons, function (value, key) { %>
+    <% _.each(value, function (v2, k2) { %>
     <tr>
         <td><%= key %></td>
-        <td><%= value.join(', ') %></td>
+        <td><%= v2 %></td>
+        <td><%= getWeapon(v2).heat %></td>
+        <td><%= formatDamage(getWeapon(v2).damage) %></td>
     </tr>
-
+    <% }) %>
     <% }) %>
 
     </tbody>

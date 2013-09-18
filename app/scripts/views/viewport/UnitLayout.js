@@ -15,7 +15,7 @@ define([
     'views/unit/UnitWeaponry',
     'views/unit/UnitRanges',
     'views/unit/UnitSlotLayout'
-], function (Marionette, template, UnitHeader, UnitOverview, UnitEquipment, UnitAmmo, UnitWeapons, UnitRanges, UnitSlotLayout) {
+], function (Marionette, template, UnitHeader, UnitOverview, UnitEquipment, UnitAmmo, UnitWeaponry, UnitRanges, UnitSlotLayout) {
     "use strict";
 
     return Marionette.Layout.extend({
@@ -32,7 +32,7 @@ define([
         },
 
         initialize: function (opts) {
-            this.weapons = opts.weapons;
+            this.weaponryList = opts.weapons;
         },
 
         onRender: function () {
@@ -41,7 +41,7 @@ define([
             this.overview.show(new UnitOverview(model));
             this.equipment.show(new UnitEquipment(model));
             this.ammo.show(new UnitAmmo(model));
-            this.weaponry.show(new UnitWeapons(model));
+            this.weaponry.show(new UnitWeaponry(model));
             this.ranges.show(new UnitRanges(model));
             this.slotLayout.show(new UnitSlotLayout(model))
         }
