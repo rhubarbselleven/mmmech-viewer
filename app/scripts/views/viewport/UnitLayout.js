@@ -12,7 +12,7 @@ define([
     'views/unit/UnitOverview',
     'views/unit/UnitEquipment',
     'views/unit/UnitAmmo',
-    'views/unit/UnitWeapons',
+    'views/unit/UnitWeaponry',
     'views/unit/UnitRanges',
     'views/unit/UnitSlotLayout'
 ], function (Marionette, template, UnitHeader, UnitOverview, UnitEquipment, UnitAmmo, UnitWeapons, UnitRanges, UnitSlotLayout) {
