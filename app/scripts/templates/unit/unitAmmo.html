@@ -5,17 +5,19 @@
     <tr>
         <th>Location</th>
         <th>Ammo</th>
+        <th>Rounds</th>
     </tr>
     </thead>
 
     <tbody>
     <% _.each(ammo, function (value, key) { %>
-
+    <% _.each(value, function (v2, k2) { %>
     <tr>
         <td><%= key %></td>
-        <td><%= value.join(', ') %></td>
+        <td><%= v2.t %></td>
+        <td><%= v2.c %></td>
     </tr>
-
+    <% }) %>
     <% }) %>
 
     </tbody>
