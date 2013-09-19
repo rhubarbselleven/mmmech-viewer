@@ -1,10 +1,19 @@
-<h2><% if (img !== null) { %> <img src="data/img/<%= img %>"> <% } %><%= chasis %> <%= model %></h2>
+<h2><% if (img !== null) { %> <img src="data/img/<%= img %>"> <% } %><%= shortName %></h2>
 
 <div class="row-fluid">
 
     <div class="entityDamages span4">
 
         <dl class="dl-horizontal">
+            <dt>Chassis</dt>
+            <dd><%= chassis %></dd>
+            <dt>Model</dt>
+            <dd><%= model %></dd>
+            <dt>TRO</dt>
+            <dd><%= set %></dd>
+            <dt>Year</dt>
+            <dd><%= year %></dd>
+
             <dt>Weight Class</dt>
             <dd><%= weightClass %></dd>
             <dt>Weight</dt>
@@ -14,25 +23,27 @@
             <dd><%= bv %></dd>
 
             <dt>Movement</dt>
-            <dd><%= movement.walk %>/<%= movement.runString %>/<%= movement.jump %></dd>
+            <dd><%= movement.w %>/<%= movement.rs %>/<%= movement.j %></dd>
 
             <dt>Heat Capacity</dt>
-            <dd><%= heat %></dd>
+            <dd><%= heatCapacity %></dd>
 
             <dt>Armor Type</dt>
             <dd><%= armorType %></dd>
+            <dt>Total Armor</dt>
+            <dd><%= totalExternalArmor %></dd>
             <dt>Internal Structure</dt>
             <dd><%= structureType %></dd>
+            <dt>Total Internal</dt>
+            <dd><%= totalInternalArmor %></dd>
             <dt>Engine</dt>
             <dd><%= engine %></dd>
 
             <dt>Cockpit</dt>
-            <dd><%= cockpitType %></dd>
+            <dd><%= cockpit %></dd>
             <dt>Gyro</dt>
-            <dd><%= gyroType %></dd>
+            <dd><%= gyro %></dd>
 
-            <dt>Year</dt>
-            <dd><%= year %></dd>
         </dl>
 
 
@@ -41,7 +52,7 @@
 
     <div class="span8">
 
-        <% if (misc.length > 0) { %>
+        <% if (equips.length > 0) { %>
         <table class="table table-hover table-condensed">
             <thead>
             <tr>
@@ -51,8 +62,8 @@
             </thead>
 
             <tbody>
-            <% for (var i = 0; i < misc.length; i++) {
-                var t = misc[i];
+            <% for (var i = 0; i < equips.length; i++) {
+            var t = equips[i];
             %>
             <tr>
                 <td><%= t.equip %></td>
@@ -142,7 +153,7 @@
         </tbody>
     </table>
 </div>
-<div class="isQuad" >
+<div class="isQuad">
     <table class="table table-condensed">
         <thead>
         <tr>
