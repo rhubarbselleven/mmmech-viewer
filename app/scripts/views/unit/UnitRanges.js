@@ -31,9 +31,12 @@ define([
             var rawData = [];
             _.each(this.model.get('weapons'), function (v, i) {
                 _.each(v, function (v2, i2) {
+                    // only include if it has a range.
                     var weapon = weaponry[unitType][v2];
-                    weapon.name = v2;
-                    rawData.push(weapon);
+                    if (weapon.longRange > 0) {
+                        weapon.name = v2;
+                        rawData.push(weapon);
+                    }
                 });
             });
 

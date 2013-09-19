@@ -31,6 +31,8 @@ define([
                     return '-- variable --';
                 } else if (damage === -2) {
                     return '-- missile --';
+                } else if (damage === -4) {
+                    return '-- special --';
                 } else if (damage === -5) {
                     return '-- artillery --';
                 } else {
