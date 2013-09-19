@@ -10824,7 +10824,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   // AMD define happens at the end for compatibility with AMD loaders
   // that don't enforce next-turn semantics on modules.
   if (typeof define === 'function' && define.amd) {
-    define('underscore', [],function() {
+    define('underscore',[], function() {
       return _;
     });
   }
@@ -14855,7 +14855,7 @@ define('Router',[
 
         });
     });
-define('models/MechModel',[
+define('models/UnitModel',[
     'underscore',
     'backbone'
 
@@ -14888,13 +14888,23 @@ define('collections/EntityCollection',[
     'underscore',
     'backbone',
 
-    'models/MechModel'
-], function (_, Backbone, MechModel) {
+    'models/UnitModel'
+], function (_, Backbone, UnitModel) {
     "use strict";
 
     return Backbone.Collection.extend({
 
-        model: MechModel
+        model: UnitModel,
+
+        parse: function (payload) {
+            // payload will be a number of keys of arrays.
+            var total = [];
+            for (var type in payload) {
+                total = total.concat(payload[type]);
+            }
+
+            return total;
+        }
     });
 });
 
@@ -15100,7 +15110,7 @@ define('collections/EntityCollection',[
 //>>excludeEnd('excludeTpl')
 }());
 
-define('tpl!templates/left/mechSearchPaneDetail.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<a href="#/', model ,'">', model ,'</a>');}return __p.join('');}});
+define('tpl!templates/left/unitSearchPaneDetail.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<a href="#">', shortName ,'</a>');}return __p.join('');}});
 
 /**
  * Created with IntelliJ IDEA.
@@ -15108,10 +15118,10 @@ define('tpl!templates/left/mechSearchPaneDetail.html', function() {return functi
  * Date: 16/02/13
  * Time: 2:45 PM
  */
-define('views/left/MechSearchResult',[
+define('views/left/SearchResult',[
     'marionette',
 
-    'tpl!templates/left/mechSearchPaneDetail.html'
+    'tpl!templates/left/unitSearchPaneDetail.html'
 ], function (Marionette, template) {
     "use strict";
 
@@ -15133,7 +15143,7 @@ define('views/left/MechSearchResult',[
     });
 });
 
-define('tpl!templates/left/mechSearchPane.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="well">    <div>        <h3>Search</h3>        <label>            <input class="modelSearch" type="text" placeholder="Variant or Chassis">        </label>    </div>    <div class="modelResults">        <ul class="nav nav-list"></ul>    </div></div>');}return __p.join('');}});
+define('tpl!templates/left/unitSearchPane.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="well">    <div>        <h3>Search</h3>        <label>            <input class="modelSearch" type="text" placeholder="Variant or Chassis">        </label>    </div>    <div class="modelResults">        <ul class="nav nav-list"></ul>    </div></div>');}return __p.join('');}});
 
 /**
  * Created with IntelliJ IDEA.
@@ -15141,14 +15151,14 @@ define('tpl!templates/left/mechSearchPane.html', function() {return function(obj
  * Date: 16/02/13
  * Time: 2:45 PM
  */
-define('views/left/MechSearchViewPane',[
+define('views/left/SearchViewPane',[
     'marionette',
     'collections/EntityCollection',
 
-    'views/left/MechSearchResult',
+    'views/left/SearchResult',
 
-    'tpl!templates/left/mechSearchPane.html'
-], function (Marionette, EntityCollection, MechSearchResult, template) {
+    'tpl!templates/left/unitSearchPane.html'
+], function (Marionette, EntityCollection, SearchResult, template) {
     "use strict";
 
     return Marionette.CompositeView.extend({
@@ -15156,7 +15166,7 @@ define('views/left/MechSearchViewPane',[
         template: template,
 
         itemViewContainer: '.modelResults ul',
-        itemView: MechSearchResult,
+        itemView: SearchResult,
 
         events: {
             'keyup .modelSearch ': 'performFilter',
@@ -15182,10 +15192,13 @@ define('views/left/MechSearchViewPane',[
                 this.collection.reset();
             } else {
 
+//                var regex = new RegExp(val, "i");
+
                 var filter = this.entities.filter(function (model) {
-                    // todo: fix name of chassis
-                    return model.id.substr(0, val.length).toUpperCase() === val
-                        || model.get('chasis').substr(0, val.length).toUpperCase() === val;
+
+//                    return regex.test(model.get('shortName'));
+                    return model.get('model').substr(0, val.length).toUpperCase() === val
+                        || model.get('chassis').substr(0, val.length).toUpperCase() === val;
                 });
 
                 // just reset with our known stuff. let events handle it all.
@@ -15227,14 +15240,14 @@ define('views/left/MechSearchViewPane',[
  * Date: 16/02/13
  * Time: 2:45 PM
  */
-define('views/left/MechSelectionViewList',[
+define('views/left/SelectionViewList',[
     'marionette',
     'collections/EntityCollection',
 
-    'views/left/MechSearchResult',
+    'views/left/SearchResult',
 
-    'tpl!templates/left/mechSearchPane.html'
-], function (Marionette, EntityCollection, MechSearchResult, template) {
+    'tpl!templates/left/unitSearchPane.html'
+], function (Marionette, EntityCollection, SearchResult, template) {
     "use strict";
 
     return Marionette.CompositeView.extend({
@@ -15242,7 +15255,7 @@ define('views/left/MechSelectionViewList',[
         template: template,
 
         itemViewContainer: '.modelResults ul',
-        itemView: MechSearchResult,
+        itemView: SearchResult,
 
         events: {
             'keyup .modelSearch ': 'performFilter'
@@ -15295,12 +15308,12 @@ define('tpl!templates/left/leftLayout.html', function() {return function(obj) { 
 define('views/left/LeftLayout',[
     'marionette',
 
-    'views/left/MechSearchViewPane',
-    'views/left/MechSelectionViewList',
+    'views/left/SearchViewPane',
+    'views/left/SelectionViewList',
 
     'tpl!templates/left/leftLayout.html'
 
-], function (Marionette, MechSearchViewPane, MechSelectionViewList, template) {
+], function (Marionette, SearchViewPane, SelectionViewList, template) {
     "use strict";
 
     return Marionette.Layout.extend({
@@ -15314,23 +15327,2827 @@ define('views/left/LeftLayout',[
         initialize: function (opts) {
             this.entities = opts.entities;
 
-//            this.search.show(new MechSearchViewPane(opts));
-//            this.selection.show(new MechSelectionViewList());
+//            this.search.show(new SearchViewPane(opts));
+//            this.selection.show(new SelectionViewList());
         },
 
         onRender: function () {
 
-            this.search.show(new MechSearchViewPane({entities: this.entities}));
-//            this.search.show(new MechSelectionViewList());
+            this.search.show(new SearchViewPane({entities: this.entities}));
+//            this.search.show(new SelectionViewList());
         }
     });
 });
-define('tpl!templates/viewport/entityDetail.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<h2>'); if (img !== null) { ; __p.push(' <img src="data/img/', img ,'"> '); } ; __p.push('', chasis ,' ', model ,'</h2><div class="row-fluid">    <div class="entityDamages span4">        <dl class="dl-horizontal">            <dt>Weight Class</dt>            <dd>', weightClass ,'</dd>            <dt>Weight</dt>            <dd>', weight ,'</dd>            <dt>BV</dt>            <dd>', bv ,'</dd>            <dt>Movement</dt>            <dd>', movement.walk ,'/', movement.runString ,'/', movement.jump ,'</dd>            <dt>Heat Capacity</dt>            <dd>', heat ,'</dd>            <dt>Armor Type</dt>            <dd>', armorType ,'</dd>            <dt>Internal Structure</dt>            <dd>', structureType ,'</dd>            <dt>Engine</dt>            <dd>', engine ,'</dd>            <dt>Cockpit</dt>            <dd>', cockpitType ,'</dd>            <dt>Gyro</dt>            <dd>', gyroType ,'</dd>            <dt>Year</dt>            <dd>', year ,'</dd>        </dl>    </div>    <div class="span8">        '); if (misc.length > 0) { ; __p.push('        <table class="table table-hover table-condensed">            <thead>            <tr>                <th>Equipment</th>                <th>Location</th>            </tr>            </thead>            <tbody>            '); for (var i = 0; i < misc.length; i++) {                 var t = misc[i];             ; __p.push('            <tr>                <td>', t.equip ,'</td>                <td>', t.loc ,'</td>            </tr>            '); } ; __p.push('            </tbody>        </table>        '); } ; __p.push('        <table class="table table-hover table-condensed">            <thead>            <tr>                <th>Weapon</th>                <th>Location</th>                <th>Heat</th>                <th>Damage</th>            </tr>            </thead>            <tbody class="weaponList"></tbody>        </table>    </div></div><div class="row-fluid">    <div class="weaponRange"></div></div><table class="table table-condensed">    <thead>    <tr>        <th>Head</th>        <th>Left Torso Rear</th>        <th>Center Torso Rear</th>        <th>Right Torso Rear</th>    </tr>    </thead>    <tbody>    <tr>        <td class="slot-HD"></td>        <td class="slot-LTR"></td>        <td class="slot-CTR"></td>        <td class="slot-RTR"></td>    </tr>    </tbody></table><table class="table table-condensed">    <thead>    <tr>        <th>Left Arm</th>        <th>Left Torso</th>        <th>Center Torso</th>        <th>Right Torso</th>        <th>Right Arm</th>    </tr>    </thead>    <tbody>    <tr>        <td class="slot-LA"></td>        <td class="slot-LT"></td>        <td class="slot-CT"></td>        <td class="slot-RT"></td>        <td class="slot-RA"></td>    </tr>    </tbody></table><div class="notQuad">    <table class="table table-condensed">        <thead>        <tr>            <th>Left Leg</th>            <th>Right Leg</th>        </tr>        </thead>        <tbody>        <tr>            <td class="slot-LL"></td>            <td class="slot-RL"></td>        </tr>        </tbody>    </table></div><div class="isQuad" >    <table class="table table-condensed">        <thead>        <tr>            <th>Front Left Leg</th>            <th>Front Right Leg</th>            <th>Rear Left Leg</th>            <th>Rear Right Leg</th>        </tr>        </thead>        <tbody>        <tr>            <td class="slot-FLL"></td>            <td class="slot-FRL"></td>            <td class="slot-RLL"></td>            <td class="slot-RRL"></td>        </tr>        </tbody>    </table></div>');}return __p.join('');}});
+define('tpl!templates/viewport/unitLayout.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="header"></div><div class="row-fluid">    <div class="overview span6"></div>    <div class="armor span6"></div></div><div class="row-fluid">    <div class="weaponry span5"></div>    <div class="span6">        <div class="row-fluid">            <div class="equipment "></div>        </div>        <div class="row-fluid">            <div class="ammo "></div>        </div>    </div></div><div class="row-fluid">    <div class="ranges span12"></div></div><div class="row-fluid">    <div class="unitLayout"></div></div>');}return __p.join('');}});
 
-define('tpl!templates/viewport/entitySlot.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<ul class="unstyled">    <li>Armor: <span class="badge badge-info">', armor.external ,'</span> <span class="badge badge-important">', armor.internal ,'</span></li>    '); if (equipment.criticals && equipment.criticals.length > 0) { ; __p.push('    <li>        <strong class="text-error">Critical Slots</strong>        <ul class="unstyled">            '); _.each(equipment.criticals, function(crit) { ; __p.push('            <li>'); if ('.E' !== crit) { ; __p.push('                ', crit ,'                '); } else { ; __p.push('                -- Empty --                '); } ; __p.push('            </li>            '); }); ; __p.push('        </ul>    </li>    '); } ; __p.push('    '); if (equipment.nonCriticals && equipment.nonCriticals.length > 0) { ; __p.push('    <li>        <strong class="text-info">Equipment Slots</strong>        <ul class="unstyled">            '); _.each(equipment.nonCriticals, function(eq) { ; __p.push('            <li>', eq ,'</li>            '); }); ; __p.push('        </ul>    </li>    '); } ; __p.push('</ul>');}return __p.join('');}});
+define('tpl!templates/unit/header.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<h2>'); if (img !== null) { ; __p.push(' <img src="data/img/', img ,'"> '); } ; __p.push('    ', shortName ,'    '); if (isClan) { ; __p.push(' <span class="label label-important">Clan</span>'); } ; __p.push('</h2>');}return __p.join('');}});
 
-define('tpl!templates/viewport/entityWeapons.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('    <tr>        <td>', name ,'</td>        <td>', location ,'</td>        <td>', heat ,'</td>        <td>            '); if (damage > 0) { ; __p.push('            ', damage ,'            '); } else if (damage === -3) { ; __p.push('            -variable-            '); } else if (damage === -2) { ; __p.push('            -missile-            '); } ; __p.push('</td>    </tr>');}return __p.join('');}});
+/**
+ * Created with IntelliJ IDEA.
+ * User: drew
+ * Date: 9/17/13
+ * Time: 4:00 PM
+ * To change this template use File | Settings | File Templates.
+ */
+define('views/unit/UnitHeader',[
+    'marionette',
 
+    'tpl!templates/unit/header.html'
+
+], function (Marionette, template) {
+    return Marionette.ItemView.extend({
+        template: template
+    });
+});
+define('tpl!templates/unit/default.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<h2>To implement.</h2>');}return __p.join('');}});
+
+define('tpl!templates/unit/mechOverview.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<h3>Mech Overview</h3><dl class="dl-horizontal">    <dt>Unit Type</dt>    <dd>Mech    ');if (isQuad) { ; __p.push('        <span class="label label-success">Quad</span>        '); }         if (isOmni) { ; __p.push('        <span class="label label-warning">Omni</span>        '); } ; __p.push('    </dd>    <dt>Chassis</dt>    <dd>', chassis ,'</dd>    <dt>Model</dt>    <dd>', model ,'</dd>    <dt>Set Type</dt>    <dd>', set ,'</dd>    <dt>Year</dt>    <dd>', year ,'</dd>    <dt>Weight Class</dt>    <dd>', weightClass ,'</dd>    <dt>Weight</dt>    <dd>', weight ,'</dd>    <dt>BV</dt>    <dd>', bv ,'</dd>    <dt>Movement</dt>    <dd>', movement.w ,'/', movement.rs ,'        '); if (movement.j > 0) { ; __p.push('        /', movement.j ,'        '); } ; __p.push('    </dd>    <dt>Heat Capacity</dt>    <dd>', heatCapacity ,'</dd>    <dt>Armor Type</dt>    <dd>', armorType ,'</dd>    <dt>Total Armor</dt>    <dd>', totalExternalArmor ,'</dd>    <dt>Internal Structure</dt>    <dd>', structureType ,'</dd>    <dt>Total Internal</dt>    <dd>', totalInternalArmor ,'</dd>    <dt>Engine</dt>    <dd>', engine ,'</dd>    <dt>Cockpit</dt>    <dd>', cockpit ,'</dd>    <dt>Gyro</dt>    <dd>', gyro ,'</dd></dl>');}return __p.join('');}});
+
+define('tpl!templates/unit/veeOverview.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<h3>Vehicle Overview</h3><dl class="dl-horizontal">    <dt>Unit Type</dt>    <dd>Vehicle <span class="label label-inverse">', movementType ,'</span></dd>    <dt>Chassis</dt>    <dd>', chassis ,'</dd>    <dt>Model</dt>    <dd>', model ,'</dd>    <dt>Set Type</dt>    <dd>', set ,'</dd>    <dt>Year</dt>    <dd>', year ,'</dd>    <dt>Weight Class</dt>    <dd>', weightClass ,'</dd>    <dt>Weight</dt>    <dd>', weight ,'</dd>    <dt>BV</dt>    <dd>', bv ,'</dd>    <dt>Movement</dt>    <dd>', movement.w ,'/', movement.rs ,'</dd>    <dt>Armor Type</dt>    <dd>', armorType ,'</dd>    <dt>Total Armor</dt>    <dd>', totalExternalArmor ,'</dd>    <dt>Internal Structure</dt>    <dd>', structureType ,'</dd>    <dt>Total Internal</dt>    <dd>', totalInternalArmor ,'</dd>    <dt>Engine</dt>    <dd>', engine ,'</dd></dl>');}return __p.join('');}});
+
+define('tpl!templates/unit/baOverview.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<h3>Battle Armor Overview</h3><dl class="dl-horizontal">    <dt>Unit Type</dt>    <dd>Battle Armor</dd>    <dt>Battle Armor</dt>    <dd>', shortName ,'</dd>    <dt>Set Type</dt>    <dd>', set ,'</dd>    <dt>Year</dt>    <dd>', year ,'</dd>    <dt>Weight Class</dt>    <dd>', weightClass ,'</dd>    <dt>Weight</dt>    <dd>', weight ,'</dd>    <dt>BV</dt>    <dd>', bv ,'</dd>    <dt>Movement</dt>    <dd>', movement.w ,'/', movement.rs ,'        '); if (movement.j > 0) { ; __p.push('        /', movement.j ,'        '); } ; __p.push('    </dd>    <dt>Burdened</dt>    <dd>'); if (burdened) {; __p.push(' Yes '); } else { ; __p.push(' No '); } ; __p.push('</dd>    <dt>Total Armor</dt>    <dd>', totalExternalArmor ,'</dd>    <dt>Squad Size</dt>    <dd>', squadSize ,'</dd></dl>');}return __p.join('');}});
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: drew
+ * Date: 9/17/13
+ * Time: 4:00 PM
+ * To change this template use File | Settings | File Templates.
+ */
+define('views/unit/UnitOverview',[
+    'marionette',
+
+    'tpl!templates/unit/default.html',
+    'tpl!templates/unit/mechOverview.html',
+    'tpl!templates/unit/veeOverview.html',
+    'tpl!templates/unit/baOverview.html'
+
+], function (Marionette, fakeTemplate, mechOverview, veeOverview, baOverview) {
+    return Marionette.ItemView.extend({
+        // template: template,
+
+        initialize: function () {
+            // todo: this is a hack for missing values.
+            if (!this.model.get('armorType')) {
+                this.model.set('armorType', 'Standard');
+            }
+            if (!this.model.get('structureType')) {
+                this.model.set('structureType', 'Standard');
+            }
+        },
+
+        getTemplate: function () {
+            var unitType = this.model.get('unitType');
+            if (unitType === "mech") {
+                return mechOverview;
+            } else if (unitType === "vee") {
+                return veeOverview;
+            } else if (unitType === "BA") {
+                return baOverview;
+            } else {
+                return fakeTemplate;
+            }
+        }
+
+    });
+});
+define('tpl!templates/unit/unitArmor.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<h3>Armor</h3><table class="table table-hover table-condensed">    <thead>    <tr>        <th>Location</th>        <th>External</th>        <th>Internal</th>    </tr>    </thead>    <tbody>    '); _.each(armor, function (value, key) { ; __p.push('    <tr>        <td>', key ,'</td>        <td>', value[0].e ,'</td>        <td>', value[0].i ,'</td>    </tr>    '); }) ; __p.push('    </tbody></table>');}return __p.join('');}});
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: drew
+ * Date: 9/17/13
+ * Time: 4:00 PM
+ * To change this template use File | Settings | File Templates.
+ */
+define('views/unit/UnitArmor',[
+    'marionette',
+
+    'tpl!templates/unit/unitArmor.html'
+
+], function (Marionette, template) {
+    return Marionette.ItemView.extend({
+        template: template
+    });
+});
+define('tpl!templates/unit/unitEquipment.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push(''); if (!_.isEmpty(equips)) { ; __p.push('<h3>Equipment</h3><table class="table table-hover table-condensed">    <thead>    <tr>        <th>Location</th>        <th>Equipment</th>    </tr>    </thead>    <tbody>    '); _.each(equips, function (value, key) { ; __p.push('    <tr>        <td>', key ,'</td>        <td>', value.join(', ') ,'</td>    </tr>    '); }) ; __p.push('    </tbody></table>'); } ; __p.push('');}return __p.join('');}});
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: drew
+ * Date: 9/17/13
+ * Time: 4:00 PM
+ * To change this template use File | Settings | File Templates.
+ */
+define('views/unit/UnitEquipment',[
+    'marionette',
+
+    'tpl!templates/unit/unitEquipment.html'
+
+], function (Marionette, template) {
+    return Marionette.ItemView.extend({
+        template: template
+    });
+});
+define('tpl!templates/unit/unitAmmo.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push(''); if (!_.isEmpty(ammo)) { ; __p.push('<h3>Ammunition</h3><table class="table table-hover table-condensed">    <thead>    <tr>        <th>Location</th>        <th>Ammo</th>        <th>Rounds</th>    </tr>    </thead>    <tbody>    '); _.each(ammo, function (value, key) { ; __p.push('    '); _.each(value, function (v2, k2) { ; __p.push('    <tr>        <td>', key ,'</td>        <td>', v2.t ,'</td>        <td>', v2.c ,'</td>    </tr>    '); }) ; __p.push('    '); }) ; __p.push('    </tbody></table>'); } ; __p.push('');}return __p.join('');}});
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: drew
+ * Date: 9/17/13
+ * Time: 4:00 PM
+ * To change this template use File | Settings | File Templates.
+ */
+define('views/unit/UnitAmmo',[
+    'marionette',
+
+    'tpl!templates/unit/unitAmmo.html'
+
+], function (Marionette, template) {
+    return Marionette.ItemView.extend({
+        template: template
+    });
+});
+define('tpl!templates/unit/unitWeaponry.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push(''); if (!_.isEmpty(weapons)) { ; __p.push('<h3>Weaponry</h3><table class="table table-hover table-condensed">    <thead>    <tr>        <th>Location</th>        <th>Weapon</th>        <th>Heat</th>        <th>Damage</th>    </tr>    </thead>    <tbody>    '); _.each(weapons, function (value, key) { ; __p.push('    '); _.each(value, function (v2, k2) { ; __p.push('    <tr>        <td>', key ,'</td>        <td>', v2 ,'</td>        <td>', getWeapon(v2).heat ,'</td>        <td>', formatDamage(getWeapon(v2).damage) ,'</td>    </tr>    '); }) ; __p.push('    '); }) ; __p.push('    </tbody></table>'); } ; __p.push('');}return __p.join('');}});
+
+/**
+ * @license RequireJS text 2.0.5 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
+ * Available via the MIT or new BSD license.
+ * see: http://github.com/requirejs/text for details
+ */
+/*jslint regexp: true */
+/*global require: false, XMLHttpRequest: false, ActiveXObject: false,
+  define: false, window: false, process: false, Packages: false,
+  java: false, location: false */
+
+define('text',['module'], function (module) {
+    'use strict';
+
+    var text, fs,
+        progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'],
+        xmlRegExp = /^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im,
+        bodyRegExp = /<body[^>]*>\s*([\s\S]+)\s*<\/body>/im,
+        hasLocation = typeof location !== 'undefined' && location.href,
+        defaultProtocol = hasLocation && location.protocol && location.protocol.replace(/\:/, ''),
+        defaultHostName = hasLocation && location.hostname,
+        defaultPort = hasLocation && (location.port || undefined),
+        buildMap = [],
+        masterConfig = (module.config && module.config()) || {};
+
+    text = {
+        version: '2.0.5',
+
+        strip: function (content) {
+            //Strips <?xml ...?> declarations so that external SVG and XML
+            //documents can be added to a document without worry. Also, if the string
+            //is an HTML document, only the part inside the body tag is returned.
+            if (content) {
+                content = content.replace(xmlRegExp, "");
+                var matches = content.match(bodyRegExp);
+                if (matches) {
+                    content = matches[1];
+                }
+            } else {
+                content = "";
+            }
+            return content;
+        },
+
+        jsEscape: function (content) {
+            return content.replace(/(['\\])/g, '\\$1')
+                .replace(/[\f]/g, "\\f")
+                .replace(/[\b]/g, "\\b")
+                .replace(/[\n]/g, "\\n")
+                .replace(/[\t]/g, "\\t")
+                .replace(/[\r]/g, "\\r")
+                .replace(/[\u2028]/g, "\\u2028")
+                .replace(/[\u2029]/g, "\\u2029");
+        },
+
+        createXhr: masterConfig.createXhr || function () {
+            //Would love to dump the ActiveX crap in here. Need IE 6 to die first.
+            var xhr, i, progId;
+            if (typeof XMLHttpRequest !== "undefined") {
+                return new XMLHttpRequest();
+            } else if (typeof ActiveXObject !== "undefined") {
+                for (i = 0; i < 3; i += 1) {
+                    progId = progIds[i];
+                    try {
+                        xhr = new ActiveXObject(progId);
+                    } catch (e) {}
+
+                    if (xhr) {
+                        progIds = [progId];  // so faster next time
+                        break;
+                    }
+                }
+            }
+
+            return xhr;
+        },
+
+        /**
+         * Parses a resource name into its component parts. Resource names
+         * look like: module/name.ext!strip, where the !strip part is
+         * optional.
+         * @param {String} name the resource name
+         * @returns {Object} with properties "moduleName", "ext" and "strip"
+         * where strip is a boolean.
+         */
+        parseName: function (name) {
+            var modName, ext, temp,
+                strip = false,
+                index = name.indexOf("."),
+                isRelative = name.indexOf('./') === 0 ||
+                             name.indexOf('../') === 0;
+
+            if (index !== -1 && (!isRelative || index > 1)) {
+                modName = name.substring(0, index);
+                ext = name.substring(index + 1, name.length);
+            } else {
+                modName = name;
+            }
+
+            temp = ext || modName;
+            index = temp.indexOf("!");
+            if (index !== -1) {
+                //Pull off the strip arg.
+                strip = temp.substring(index + 1) === "strip";
+                temp = temp.substring(0, index);
+                if (ext) {
+                    ext = temp;
+                } else {
+                    modName = temp;
+                }
+            }
+
+            return {
+                moduleName: modName,
+                ext: ext,
+                strip: strip
+            };
+        },
+
+        xdRegExp: /^((\w+)\:)?\/\/([^\/\\]+)/,
+
+        /**
+         * Is an URL on another domain. Only works for browser use, returns
+         * false in non-browser environments. Only used to know if an
+         * optimized .js version of a text resource should be loaded
+         * instead.
+         * @param {String} url
+         * @returns Boolean
+         */
+        useXhr: function (url, protocol, hostname, port) {
+            var uProtocol, uHostName, uPort,
+                match = text.xdRegExp.exec(url);
+            if (!match) {
+                return true;
+            }
+            uProtocol = match[2];
+            uHostName = match[3];
+
+            uHostName = uHostName.split(':');
+            uPort = uHostName[1];
+            uHostName = uHostName[0];
+
+            return (!uProtocol || uProtocol === protocol) &&
+                   (!uHostName || uHostName.toLowerCase() === hostname.toLowerCase()) &&
+                   ((!uPort && !uHostName) || uPort === port);
+        },
+
+        finishLoad: function (name, strip, content, onLoad) {
+            content = strip ? text.strip(content) : content;
+            if (masterConfig.isBuild) {
+                buildMap[name] = content;
+            }
+            onLoad(content);
+        },
+
+        load: function (name, req, onLoad, config) {
+            //Name has format: some.module.filext!strip
+            //The strip part is optional.
+            //if strip is present, then that means only get the string contents
+            //inside a body tag in an HTML string. For XML/SVG content it means
+            //removing the <?xml ...?> declarations so the content can be inserted
+            //into the current doc without problems.
+
+            // Do not bother with the work if a build and text will
+            // not be inlined.
+            if (config.isBuild && !config.inlineText) {
+                onLoad();
+                return;
+            }
+
+            masterConfig.isBuild = config.isBuild;
+
+            var parsed = text.parseName(name),
+                nonStripName = parsed.moduleName +
+                    (parsed.ext ? '.' + parsed.ext : ''),
+                url = req.toUrl(nonStripName),
+                useXhr = (masterConfig.useXhr) ||
+                         text.useXhr;
+
+            //Load the text. Use XHR if possible and in a browser.
+            if (!hasLocation || useXhr(url, defaultProtocol, defaultHostName, defaultPort)) {
+                text.get(url, function (content) {
+                    text.finishLoad(name, parsed.strip, content, onLoad);
+                }, function (err) {
+                    if (onLoad.error) {
+                        onLoad.error(err);
+                    }
+                });
+            } else {
+                //Need to fetch the resource across domains. Assume
+                //the resource has been optimized into a JS module. Fetch
+                //by the module name + extension, but do not include the
+                //!strip part to avoid file system issues.
+                req([nonStripName], function (content) {
+                    text.finishLoad(parsed.moduleName + '.' + parsed.ext,
+                                    parsed.strip, content, onLoad);
+                });
+            }
+        },
+
+        write: function (pluginName, moduleName, write, config) {
+            if (buildMap.hasOwnProperty(moduleName)) {
+                var content = text.jsEscape(buildMap[moduleName]);
+                write.asModule(pluginName + "!" + moduleName,
+                               "define(function () { return '" +
+                                   content +
+                               "';});\n");
+            }
+        },
+
+        writeFile: function (pluginName, moduleName, req, write, config) {
+            var parsed = text.parseName(moduleName),
+                extPart = parsed.ext ? '.' + parsed.ext : '',
+                nonStripName = parsed.moduleName + extPart,
+                //Use a '.js' file name so that it indicates it is a
+                //script that can be loaded across domains.
+                fileName = req.toUrl(parsed.moduleName + extPart) + '.js';
+
+            //Leverage own load() method to load plugin value, but only
+            //write out values that do not have the strip argument,
+            //to avoid any potential issues with ! in file names.
+            text.load(nonStripName, req, function (value) {
+                //Use own write() method to construct full module value.
+                //But need to create shell that translates writeFile's
+                //write() to the right interface.
+                var textWrite = function (contents) {
+                    return write(fileName, contents);
+                };
+                textWrite.asModule = function (moduleName, contents) {
+                    return write.asModule(moduleName, fileName, contents);
+                };
+
+                text.write(pluginName, nonStripName, textWrite, config);
+            }, config);
+        }
+    };
+
+    if (masterConfig.env === 'node' || (!masterConfig.env &&
+            typeof process !== "undefined" &&
+            process.versions &&
+            !!process.versions.node)) {
+        //Using special require.nodeRequire, something added by r.js.
+        fs = require.nodeRequire('fs');
+
+        text.get = function (url, callback) {
+            var file = fs.readFileSync(url, 'utf8');
+            //Remove BOM (Byte Mark Order) from utf8 files if it is there.
+            if (file.indexOf('\uFEFF') === 0) {
+                file = file.substring(1);
+            }
+            callback(file);
+        };
+    } else if (masterConfig.env === 'xhr' || (!masterConfig.env &&
+            text.createXhr())) {
+        text.get = function (url, callback, errback, headers) {
+            var xhr = text.createXhr(), header;
+            xhr.open('GET', url, true);
+
+            //Allow plugins direct access to xhr headers
+            if (headers) {
+                for (header in headers) {
+                    if (headers.hasOwnProperty(header)) {
+                        xhr.setRequestHeader(header.toLowerCase(), headers[header]);
+                    }
+                }
+            }
+
+            //Allow overrides specified in config
+            if (masterConfig.onXhr) {
+                masterConfig.onXhr(xhr, url);
+            }
+
+            xhr.onreadystatechange = function (evt) {
+                var status, err;
+                //Do not explicitly handle errors, those should be
+                //visible via console output in the browser.
+                if (xhr.readyState === 4) {
+                    status = xhr.status;
+                    if (status > 399 && status < 600) {
+                        //An http 4xx or 5xx error. Signal an error.
+                        err = new Error(url + ' HTTP status: ' + status);
+                        err.xhr = xhr;
+                        errback(err);
+                    } else {
+                        callback(xhr.responseText);
+                    }
+                }
+            };
+            xhr.send(null);
+        };
+    } else if (masterConfig.env === 'rhino' || (!masterConfig.env &&
+            typeof Packages !== 'undefined' && typeof java !== 'undefined')) {
+        //Why Java, why is this so awkward?
+        text.get = function (url, callback) {
+            var stringBuffer, line,
+                encoding = "utf-8",
+                file = new java.io.File(url),
+                lineSeparator = java.lang.System.getProperty("line.separator"),
+                input = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(file), encoding)),
+                content = '';
+            try {
+                stringBuffer = new java.lang.StringBuffer();
+                line = input.readLine();
+
+                // Byte Order Mark (BOM) - The Unicode Standard, version 3.0, page 324
+                // http://www.unicode.org/faq/utf_bom.html
+
+                // Note that when we use utf-8, the BOM should appear as "EF BB BF", but it doesn't due to this bug in the JDK:
+                // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4508058
+                if (line && line.length() && line.charAt(0) === 0xfeff) {
+                    // Eat the BOM, since we've already found the encoding on this file,
+                    // and we plan to concatenating this buffer with others; the BOM should
+                    // only appear at the top of a file.
+                    line = line.substring(1);
+                }
+
+                stringBuffer.append(line);
+
+                while ((line = input.readLine()) !== null) {
+                    stringBuffer.append(lineSeparator);
+                    stringBuffer.append(line);
+                }
+                //Make sure we return a JavaScript string and not a Java string.
+                content = String(stringBuffer.toString()); //String
+            } finally {
+                input.close();
+            }
+            callback(content);
+        };
+    }
+
+    return text;
+});
+
+/** @license
+ * RequireJS plugin for loading JSON files
+ * - depends on Text plugin and it was HEAVILY "inspired" by it as well.
+ * Author: Miller Medeiros
+ * Version: 0.3.1 (2013/02/04)
+ * Released under the MIT license
+ */
+define('json',['text'], function(text){
+
+    var CACHE_BUST_QUERY_PARAM = 'bust',
+        CACHE_BUST_FLAG = '!bust',
+        jsonParse = (typeof JSON !== 'undefined' && typeof JSON.parse === 'function')? JSON.parse : function(val){
+            return eval('('+ val +')'); //quick and dirty
+        },
+        buildMap = {};
+
+    function cacheBust(url){
+        url = url.replace(CACHE_BUST_FLAG, '');
+        url += (url.indexOf('?') < 0)? '?' : '&';
+        return url + CACHE_BUST_QUERY_PARAM +'='+ Math.round(2147483647 * Math.random());
+    }
+
+    //API
+    return {
+
+        load : function(name, req, onLoad, config) {
+            if ( config.isBuild && (config.inlineJSON === false || name.indexOf(CACHE_BUST_QUERY_PARAM +'=') !== -1) ) {
+                //avoid inlining cache busted JSON or if inlineJSON:false
+                onLoad(null);
+            } else {
+                text.get(req.toUrl(name), function(data){
+                    if (config.isBuild) {
+                        buildMap[name] = data;
+                        onLoad(data);
+                    } else {
+                        onLoad(jsonParse(data));
+                    }
+                },
+                    onLoad.error, {
+                        accept: 'application/json'
+                    }
+                );
+            }
+        },
+
+        normalize : function (name, normalize) {
+            //used normalize to avoid caching references to a "cache busted" request
+            return (name.indexOf(CACHE_BUST_FLAG) === -1)? name : cacheBust(name);
+        },
+
+        //write method based on RequireJS official text plugin by James Burke
+        //https://github.com/jrburke/requirejs/blob/master/text.js
+        write : function(pluginName, moduleName, write){
+            if(moduleName in buildMap){
+                var content = buildMap[moduleName];
+                write('define("'+ pluginName +'!'+ moduleName +'", function(){ return '+ content +';});\n');
+            }
+        }
+
+    };
+});
+
+define("json!views/../../data/weapons.json", function(){ return {"is": {
+    "Narc": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "B-Pod": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "SRM 2 (ST)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "LRM 15 (ST)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Heavy Machine Gun": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Long Tom Cannon": {
+        "mediumrange": 13,
+        "longRange": 20,
+        "damage": -5,
+        "heat": 20,
+        "shortRange": 6
+    },
+    "ER Medium Laser (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 7,
+        "heat": 5,
+        "shortRange": 5
+    },
+    "ER PPC": {
+        "mediumrange": 14,
+        "longRange": 23,
+        "damage": 10,
+        "heat": 15,
+        "shortRange": 7
+    },
+    "ER Small Laser": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Heavy Mortar (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Pop-up Mine": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Rocket Launcher 20 (PP) (Clan)": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 3
+    },
+    "Arrow IV": {
+        "mediumrange": 2,
+        "longRange": 8,
+        "damage": -5,
+        "heat": 10,
+        "shortRange": 1
+    },
+    "ER Medium Laser (T)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "MML 9": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 0
+    },
+    "MML 7": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 0
+    },
+    "Streak SRM 2 (OS)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Light PPC (T)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 6
+    },
+    "MML 5": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 0
+    },
+    "Magshot": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "ER Medium Laser": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "Small VSP Laser (R)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": -3,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "Light Gauss Rifle": {
+        "mediumrange": 17,
+        "longRange": 25,
+        "damage": 8,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "ER Small Laser (R) (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "IS Light TAG (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Laser AMS": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 2,
+        "heat": 7,
+        "shortRange": 0
+    },
+    "Light Machine Gun Array (ST)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Small Laser": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "Heavy Gauss Rifle": {
+        "mediumrange": 13,
+        "longRange": 20,
+        "damage": -3,
+        "heat": 2,
+        "shortRange": 6
+    },
+    "Thunderbolt 5": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 6
+    },
+    "Small VSP Laser": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": -3,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "Firedrake Needler": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Attack Swarmed Mek": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Battle Armor Taser": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Flamer (R)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Pop-up Mine (Body)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "ER Small Laser (R)": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Medium Pulse Laser (R)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 6,
+        "heat": 4,
+        "shortRange": 2
+    },
+    "Ultra AC\/10": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 4,
+        "shortRange": 6
+    },
+    "Fluid Gun": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Streak SRM 2 (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Improved Heavy Gauss Rifle": {
+        "mediumrange": 12,
+        "longRange": 19,
+        "damage": 22,
+        "heat": 2,
+        "shortRange": 6
+    },
+    "Streak LRM 15 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Large Pulse Laser (Clan)": {
+        "mediumrange": 14,
+        "longRange": 20,
+        "damage": 10,
+        "heat": 10,
+        "shortRange": 6
+    },
+    "ER Medium Laser (R)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "Medium VSP Laser (R)": {
+        "mediumrange": 5,
+        "longRange": 9,
+        "damage": -3,
+        "heat": 7,
+        "shortRange": 2
+    },
+    "Streak SRM 4": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Rocket Launcher 10 (R)": {
+        "mediumrange": 11,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 5
+    },
+    "Plasma Rifle": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 10,
+        "heat": 10,
+        "shortRange": 5
+    },
+    "SRM 2 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Streak SRM 6": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "MML 3": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 0
+    },
+    "Streak SRM 2": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Machine Gun": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Machine Gun Array": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Ultra AC\/20": {
+        "mediumrange": 7,
+        "longRange": 10,
+        "damage": 20,
+        "heat": 8,
+        "shortRange": 3
+    },
+    "Swarm Mek": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "IS Light TAG": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "HVAC\/5": {
+        "mediumrange": 16,
+        "longRange": 28,
+        "damage": 5,
+        "heat": 3,
+        "shortRange": 8
+    },
+    "ER Large Laser": {
+        "mediumrange": 14,
+        "longRange": 19,
+        "damage": 8,
+        "heat": 12,
+        "shortRange": 7
+    },
+    "Medium Pulse Laser": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 6,
+        "heat": 4,
+        "shortRange": 2
+    },
+    "SRM 4 (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Large X-Pulse Laser": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 9,
+        "heat": 14,
+        "shortRange": 5
+    },
+    "Machine Gun (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "King David Light Gauss Rifle": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Support PPC": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Small VSP Laser (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": -3,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "SRM 4 (OS)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "LRM 5": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Small Pulse Laser (R)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 1
+    },
+    "Large Pulse Laser": {
+        "mediumrange": 7,
+        "longRange": 10,
+        "damage": 9,
+        "heat": 10,
+        "shortRange": 3
+    },
+    "Compact Narc": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Enhanced LRM 15": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Heavy Recoilless Rifle": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Stop Swarm Attack": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Gauss Rifle (T)": {
+        "mediumrange": 15,
+        "longRange": 22,
+        "damage": 15,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "Enhanced LRM 10": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 7
+    },
+    "Extended LRM 10": {
+        "mediumrange": 22,
+        "longRange": 38,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 12
+    },
+    "C3 Master Boosted with TAG": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 5
+    },
+    "ER Small Laser (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "M-Pod": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 15,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "ER Small Laser (Body)": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Rocket Launcher 1 (Body)": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Sniper": {
+        "mediumrange": 2,
+        "longRange": 18,
+        "damage": -5,
+        "heat": 10,
+        "shortRange": 1
+    },
+    "MRM 10": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Enhanced LRM 5": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Medium X-Pulse Laser (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 6,
+        "heat": 6,
+        "shortRange": 3
+    },
+    "Medium X-Pulse Laser": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 6,
+        "heat": 6,
+        "shortRange": 3
+    },
+    "Medium Recoilless Rifle (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Light Machine Gun (ST)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Sniper Cannon": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -5,
+        "heat": 10,
+        "shortRange": 4
+    },
+    "Rocket Launcher 20": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 3
+    },
+    "Light Machine Gun Array": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "AMS (R)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 1,
+        "heat": 1,
+        "shortRange": 0
+    },
+    "Rocket Launcher 15 (PP) (Clan)": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "Support PPC (Body)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Bombast Laser": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 12,
+        "heat": 12,
+        "shortRange": 5
+    },
+    "Rocket Launcher 4 (Body)": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Medium Pulse Laser (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 7,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "C3 Master with TAG": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 5
+    },
+    "Rocket Launcher 15": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "Small Laser (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "SRM 2 (OS)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Flamer": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Machine Gun (ST)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Enhanced LRM 20": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 7
+    },
+    "Rocket Launcher 10": {
+        "mediumrange": 11,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 5
+    },
+    "Medium Laser (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 5,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Ultra AC\/10 (Clan)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 3,
+        "shortRange": 6
+    },
+    "Flamer (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "SRM 4 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "LAC\/5": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 5
+    },
+    "iNarc": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "SRM 1 (OS)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "LB 5-X AC": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "LAC\/2": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 6
+    },
+    "David Light Gauss Rifle": {
+        "mediumrange": 5,
+        "longRange": 8,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "LRT 10": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 0
+    },
+    "Medium VSP Laser": {
+        "mediumrange": 5,
+        "longRange": 9,
+        "damage": -3,
+        "heat": 7,
+        "shortRange": 2
+    },
+    "SRM 1": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Small Laser (R)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "ER Flamer": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Rotary AC\/5": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 5
+    },
+    "Rotary AC\/2": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 6
+    },
+    "Heavy Grenade Launcher": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "LB 20-X AC": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 20,
+        "heat": 6,
+        "shortRange": 4
+    },
+    "LRM 4 (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 7
+    },
+    "SRM 4": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "ER Medium Laser (Body)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "SRM 2": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "ER Medium Pulse Laser (Body) (DWP) (Clan)": {
+        "mediumrange": 9,
+        "longRange": 14,
+        "damage": 7,
+        "heat": 6,
+        "shortRange": 5
+    },
+    "SRM 6": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "SRM 5 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "MRM 40": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 12,
+        "shortRange": 3
+    },
+    "Light Recoilless Rifle": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Gauss Rifle": {
+        "mediumrange": 15,
+        "longRange": 22,
+        "damage": 15,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "Heavy Recoilless Rifle (Body)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "SRT 2": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 0
+    },
+    "HVAC\/10": {
+        "mediumrange": 12,
+        "longRange": 20,
+        "damage": 10,
+        "heat": 7,
+        "shortRange": 6
+    },
+    "SRT 4": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 0
+    },
+    "Large Laser": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 8,
+        "heat": 8,
+        "shortRange": 5
+    },
+    "Extended LRM 20": {
+        "mediumrange": 22,
+        "longRange": 38,
+        "damage": -2,
+        "heat": 10,
+        "shortRange": 12
+    },
+    "MagShot (ST)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 3
+    },
+    "SRM 3 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Small Pulse Laser": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 1
+    },
+    "Streak SRM 4 (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Extended LRM 15": {
+        "mediumrange": 22,
+        "longRange": 38,
+        "damage": -2,
+        "heat": 8,
+        "shortRange": 12
+    },
+    "Machine Gun (R)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "PPC": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 10,
+        "shortRange": 6
+    },
+    "MRM 30": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 10,
+        "shortRange": 3
+    },
+    "Plasma Rifle (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Vehicle Flamer": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Small Pulse Laser (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 1
+    },
+    "Rocket Launcher 10 (PP) (Clan)": {
+        "mediumrange": 11,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 5
+    },
+    "Heavy Grenade Launcher (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Small X-Pulse Laser": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 3,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "Light Machine Gun": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Heavy PPC": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 15,
+        "heat": 15,
+        "shortRange": 6
+    },
+    "LRM 15 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Medium Pulse Laser (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 6,
+        "heat": 4,
+        "shortRange": 2
+    },
+    "MagShot": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 3
+    },
+    "Micro Grenade Launcher": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "MRM 20": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 3
+    },
+    "AMS": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 1,
+        "heat": 1,
+        "shortRange": 0
+    },
+    "Ultra AC\/5": {
+        "mediumrange": 13,
+        "longRange": 20,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 6
+    },
+    "Firedrake Needler (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Ultra AC\/2": {
+        "mediumrange": 17,
+        "longRange": 25,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "Large VSP Laser": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -3,
+        "heat": 10,
+        "shortRange": 4
+    },
+    "Infantry Auto Rifle": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Heavy Machine Gun Array": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "LRM 20": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 7
+    },
+    "MML 7 (T)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 0
+    },
+    "LB 2-X AC": {
+        "mediumrange": 18,
+        "longRange": 27,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 9
+    },
+    "Tsunami Heavy Gauss Rifle": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "ER Flamer (Clan)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Rocket Launcher 4": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Magshot (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "AC\/10": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 10,
+        "heat": 3,
+        "shortRange": 5
+    },
+    "Light Mortar (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "SRM 6 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Leg Attack": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Medium Laser": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 5,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Light Recoilless Rifle (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Long Tom": {
+        "mediumrange": 2,
+        "longRange": 30,
+        "damage": -5,
+        "heat": 20,
+        "shortRange": 1
+    },
+    "MRM 1 (Body)": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "AC\/2": {
+        "mediumrange": 16,
+        "longRange": 24,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "LRM 15": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "LRM 10": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 7
+    },
+    "AC\/5": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 6
+    },
+    "Silver Bullet Gauss Rifle": {
+        "mediumrange": 15,
+        "longRange": 22,
+        "damage": 15,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "Thunderbolt 15": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 7,
+        "shortRange": 6
+    },
+    "SRM 3 (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Mech Taser": {
+        "mediumrange": 2,
+        "longRange": 4,
+        "damage": 1,
+        "heat": 6,
+        "shortRange": 1
+    },
+    "Thunderbolt 10": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 6
+    },
+    "SRM 4 (ST)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Snub-Nose PPC": {
+        "mediumrange": 13,
+        "longRange": 15,
+        "damage": -3,
+        "heat": 10,
+        "shortRange": 9
+    },
+    "Rocket Launcher 5 (Body)": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Blazer Cannon": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 12,
+        "heat": 16,
+        "shortRange": 5
+    },
+    "LB 10-X AC": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 2,
+        "shortRange": 6
+    },
+    "Heavy Machine Gun (Body)": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "TAG": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 5
+    },
+    "Light PPC": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 6
+    },
+    "ER PPC (Clan)": {
+        "mediumrange": 14,
+        "longRange": 23,
+        "damage": 15,
+        "heat": 15,
+        "shortRange": 7
+    },
+    "SRM 4 (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Heavy Flamer": {
+        "mediumrange": 3,
+        "longRange": 4,
+        "damage": 4,
+        "heat": 5,
+        "shortRange": 2
+    },
+    "King David Light Gauss Rifle (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Thunderbolt 20": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 8,
+        "shortRange": 6
+    },
+    "Medium Recoilless Rifle": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Thumper": {
+        "mediumrange": 2,
+        "longRange": 21,
+        "damage": -5,
+        "heat": 5,
+        "shortRange": 1
+    },
+    "SRM 5 (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "AC\/20": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 20,
+        "heat": 7,
+        "shortRange": 3
+    },
+    "Rotary AC\/5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 7
+    }
+}, "clan": {
+    "ER Small Pulse Laser (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "Medium Recoilless Rifle (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "LB 2-X AC (Clan)": {
+        "mediumrange": 20,
+        "longRange": 30,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 10
+    },
+    "Streak SRM 2 (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 4
+    },
+    "Bearhunter Superheavy AC": {
+        "mediumrange": 1,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Gauss Rifle (Clan)": {
+        "mediumrange": 15,
+        "longRange": 22,
+        "damage": 15,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "Heavy Recoilless Rifle (Clan)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Medium Pulse Laser (Body) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 7,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "AP Gauss Rifle (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 3
+    },
+    "LRM 10 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 7
+    },
+    "Heavy Flamer (Clan)": {
+        "mediumrange": 3,
+        "longRange": 4,
+        "damage": 4,
+        "heat": 5,
+        "shortRange": 2
+    },
+    "ER Medium Laser (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 7,
+        "heat": 5,
+        "shortRange": 5
+    },
+    "LB 10-X AC (Clan)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 2,
+        "shortRange": 6
+    },
+    "Arrow IV (Clan)": {
+        "mediumrange": 2,
+        "longRange": 9,
+        "damage": -5,
+        "heat": 10,
+        "shortRange": 1
+    },
+    "LB 5-X AC (Clan)": {
+        "mediumrange": 15,
+        "longRange": 24,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "LRM 4 (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 7
+    },
+    "Heavy Machine Gun (Clan)": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "ER Small Laser (R) (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Machine Gun (R) (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Light Machine Gun Array (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "SRM 5 (OS) (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Laser AMS (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 2,
+        "heat": 5,
+        "shortRange": 0
+    },
+    "Small Laser": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "ER Large Laser (Clan)": {
+        "mediumrange": 15,
+        "longRange": 25,
+        "damage": 10,
+        "heat": 12,
+        "shortRange": 8
+    },
+    "Flamer (R) (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Machine Gun Array (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Narc (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "LRM 20 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 7
+    },
+    "Attack Swarmed Mek": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Micro Pulse Laser (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "ER Large Pulse Laser (Clan)": {
+        "mediumrange": 15,
+        "longRange": 23,
+        "damage": 10,
+        "heat": 13,
+        "shortRange": 7
+    },
+    "Light Recoilless Rifle (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "SRM 3 (OS) (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Plasma Cannon (Clan)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -3,
+        "heat": 7,
+        "shortRange": 6
+    },
+    "Clan TAG (Clan)": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 5
+    },
+    "AMS (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 0
+    },
+    "Streak SRM 4 (OS) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 4
+    },
+    "Ultra AC\/5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "LRM 5 (OS) (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Mortar 8": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 0,
+        "heat": 10,
+        "shortRange": 7
+    },
+    "HAG\/20 (Clan)": {
+        "mediumrange": 16,
+        "longRange": 24,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 8
+    },
+    "Streak LRM 15 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Large Pulse Laser (Clan)": {
+        "mediumrange": 14,
+        "longRange": 20,
+        "damage": 10,
+        "heat": 10,
+        "shortRange": 6
+    },
+    "B-Pod (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "ATM 3 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 5
+    },
+    "SRM 2 (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Streak LRM 5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Swarm Mek": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Flamer (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Light Machine Gun (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "LRM 15 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "LRM 3 (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 7
+    },
+    "LRM 2 (OS) (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 7
+    },
+    "Improved Heavy Large Laser (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 16,
+        "heat": 18,
+        "shortRange": 5
+    },
+    "Rotary AC\/2 (Clan)": {
+        "mediumrange": 17,
+        "longRange": 25,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "SRM 5 (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Advanced SRM 2 (Body) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "LRM 5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Ultra AC\/20 (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 20,
+        "heat": 7,
+        "shortRange": 4
+    },
+    "Advanced SRM 6 (Body) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "Stop Swarm Attack": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Infantry Auto Rifle": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "ER Flamer (Clan)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "HAG\/40 (Clan)": {
+        "mediumrange": 16,
+        "longRange": 24,
+        "damage": -2,
+        "heat": 8,
+        "shortRange": 8
+    },
+    "ProtoMech AC\/4 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 4,
+        "heat": 1,
+        "shortRange": 5
+    },
+    "ER Small Laser (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Leg Attack": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Machine Gun (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Streak SRM 6 (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "LB 20-X AC (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 20,
+        "heat": 6,
+        "shortRange": 4
+    },
+    "Ultra AC\/2 (Clan)": {
+        "mediumrange": 18,
+        "longRange": 27,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 9
+    },
+    "ER Micro Laser (Clan)": {
+        "mediumrange": 2,
+        "longRange": 4,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "Heavy Large Laser (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 16,
+        "heat": 18,
+        "shortRange": 5
+    },
+    "Heavy Medium Laser (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 10,
+        "heat": 7,
+        "shortRange": 3
+    },
+    "Vehicle Flamer (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "SRT 6 (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 0
+    },
+    "Improved Heavy Medium Laser (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 10,
+        "heat": 7,
+        "shortRange": 3
+    },
+    "HAG\/30 (Clan)": {
+        "mediumrange": 16,
+        "longRange": 24,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 8
+    },
+    "SRM 2 (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "ATM 6 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 5
+    },
+    "Mech Taser": {
+        "mediumrange": 2,
+        "longRange": 4,
+        "damage": 1,
+        "heat": 6,
+        "shortRange": 1
+    },
+    "SRM 3 (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Streak SRM 6 (R) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "Streak LRM 20 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 7
+    },
+    "SRM 1 (OS) (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Improved Heavy Small Laser (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 6,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "AP Gauss Rifle (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 3
+    },
+    "Streak SRM 4 (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 4
+    },
+    "SRM 6 (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Bombast Laser": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 12,
+        "heat": 12,
+        "shortRange": 5
+    },
+    "Medium Pulse Laser (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 7,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "Advanced SRM 5 (Body) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "ER PPC (Clan)": {
+        "mediumrange": 14,
+        "longRange": 23,
+        "damage": 15,
+        "heat": 15,
+        "shortRange": 7
+    },
+    "Heavy Machine Gun Array (Clan)": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Medium Pulse Laser (R) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 7,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "SRM 4 (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "ER Medium Laser (R) (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 7,
+        "heat": 5,
+        "shortRange": 5
+    },
+    "Small Pulse Laser (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "ATM 9 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 5
+    },
+    "Ultra AC\/10 (Clan)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 3,
+        "shortRange": 6
+    },
+    "Micro Bomb (Body) (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -3,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Streak LRM 10 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 7
+    },
+    "ATM 12 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 8,
+        "shortRange": 5
+    },
+    "Heavy Small Laser (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 6,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "ER Medium Pulse Laser (Clan)": {
+        "mediumrange": 9,
+        "longRange": 14,
+        "damage": 7,
+        "heat": 6,
+        "shortRange": 5
+    },
+    "Light TAG (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Rotary AC\/5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 7
+    }
+}};});
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: drew
+ * Date: 9/17/13
+ * Time: 4:00 PM
+ * To change this template use File | Settings | File Templates.
+ */
+define('views/unit/UnitWeaponry',[
+    'marionette',
+
+    'tpl!templates/unit/unitWeaponry.html',
+    'json!../../../data/weapons.json'
+
+], function (Marionette, template, weaponry) {
+    return Marionette.ItemView.extend({
+        template: template,
+
+        templateHelpers: {
+            listOfWeaponry: weaponry,
+
+            getWeapon: function (name) {
+
+                if (this.isClan) {
+                    return this.listOfWeaponry['clan'][name];
+                } else {
+                    return this.listOfWeaponry['is'][name];
+                }
+            },
+            formatDamage: function (damage) {
+                if (damage === -3) {
+                    return '-- variable --';
+                } else if (damage === -2) {
+                    return '-- missile --';
+                } else if (damage === -4) {
+                    return '-- special --';
+                } else if (damage === -5) {
+                    return '-- artillery --';
+                } else {
+                    return damage;
+                }
+            }
+        }
+    });
+
+
+});
 // ==ClosureCompiler==
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
@@ -32018,126 +34835,2296 @@ define("highcharts", ["jquery"], (function (global) {
     };
 }(this)));
 
+define("json!../../../data/weapons.json", function(){ return {"is": {
+    "Narc": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "B-Pod": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "SRM 2 (ST)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "LRM 15 (ST)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Heavy Machine Gun": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Long Tom Cannon": {
+        "mediumrange": 13,
+        "longRange": 20,
+        "damage": -5,
+        "heat": 20,
+        "shortRange": 6
+    },
+    "ER Medium Laser (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 7,
+        "heat": 5,
+        "shortRange": 5
+    },
+    "ER PPC": {
+        "mediumrange": 14,
+        "longRange": 23,
+        "damage": 10,
+        "heat": 15,
+        "shortRange": 7
+    },
+    "ER Small Laser": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Heavy Mortar (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Pop-up Mine": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Rocket Launcher 20 (PP) (Clan)": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 3
+    },
+    "Arrow IV": {
+        "mediumrange": 2,
+        "longRange": 8,
+        "damage": -5,
+        "heat": 10,
+        "shortRange": 1
+    },
+    "ER Medium Laser (T)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "MML 9": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 0
+    },
+    "MML 7": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 0
+    },
+    "Streak SRM 2 (OS)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Light PPC (T)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 6
+    },
+    "MML 5": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 0
+    },
+    "Magshot": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "ER Medium Laser": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "Small VSP Laser (R)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": -3,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "Light Gauss Rifle": {
+        "mediumrange": 17,
+        "longRange": 25,
+        "damage": 8,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "ER Small Laser (R) (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "IS Light TAG (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Laser AMS": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 2,
+        "heat": 7,
+        "shortRange": 0
+    },
+    "Light Machine Gun Array (ST)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Small Laser": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "Heavy Gauss Rifle": {
+        "mediumrange": 13,
+        "longRange": 20,
+        "damage": -3,
+        "heat": 2,
+        "shortRange": 6
+    },
+    "Thunderbolt 5": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 6
+    },
+    "Small VSP Laser": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": -3,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "Firedrake Needler": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Attack Swarmed Mek": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Battle Armor Taser": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Flamer (R)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Pop-up Mine (Body)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "ER Small Laser (R)": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Medium Pulse Laser (R)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 6,
+        "heat": 4,
+        "shortRange": 2
+    },
+    "Ultra AC\/10": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 4,
+        "shortRange": 6
+    },
+    "Fluid Gun": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Streak SRM 2 (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Improved Heavy Gauss Rifle": {
+        "mediumrange": 12,
+        "longRange": 19,
+        "damage": 22,
+        "heat": 2,
+        "shortRange": 6
+    },
+    "Streak LRM 15 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Large Pulse Laser (Clan)": {
+        "mediumrange": 14,
+        "longRange": 20,
+        "damage": 10,
+        "heat": 10,
+        "shortRange": 6
+    },
+    "ER Medium Laser (R)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "Medium VSP Laser (R)": {
+        "mediumrange": 5,
+        "longRange": 9,
+        "damage": -3,
+        "heat": 7,
+        "shortRange": 2
+    },
+    "Streak SRM 4": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Rocket Launcher 10 (R)": {
+        "mediumrange": 11,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 5
+    },
+    "Plasma Rifle": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 10,
+        "heat": 10,
+        "shortRange": 5
+    },
+    "SRM 2 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Streak SRM 6": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "MML 3": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 0
+    },
+    "Streak SRM 2": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Machine Gun": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Machine Gun Array": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Ultra AC\/20": {
+        "mediumrange": 7,
+        "longRange": 10,
+        "damage": 20,
+        "heat": 8,
+        "shortRange": 3
+    },
+    "Swarm Mek": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "IS Light TAG": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "HVAC\/5": {
+        "mediumrange": 16,
+        "longRange": 28,
+        "damage": 5,
+        "heat": 3,
+        "shortRange": 8
+    },
+    "ER Large Laser": {
+        "mediumrange": 14,
+        "longRange": 19,
+        "damage": 8,
+        "heat": 12,
+        "shortRange": 7
+    },
+    "Medium Pulse Laser": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 6,
+        "heat": 4,
+        "shortRange": 2
+    },
+    "SRM 4 (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Large X-Pulse Laser": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 9,
+        "heat": 14,
+        "shortRange": 5
+    },
+    "Machine Gun (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "King David Light Gauss Rifle": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Support PPC": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Small VSP Laser (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": -3,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "SRM 4 (OS)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "LRM 5": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Small Pulse Laser (R)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 1
+    },
+    "Large Pulse Laser": {
+        "mediumrange": 7,
+        "longRange": 10,
+        "damage": 9,
+        "heat": 10,
+        "shortRange": 3
+    },
+    "Compact Narc": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Enhanced LRM 15": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Heavy Recoilless Rifle": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Stop Swarm Attack": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Gauss Rifle (T)": {
+        "mediumrange": 15,
+        "longRange": 22,
+        "damage": 15,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "Enhanced LRM 10": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 7
+    },
+    "Extended LRM 10": {
+        "mediumrange": 22,
+        "longRange": 38,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 12
+    },
+    "C3 Master Boosted with TAG": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 5
+    },
+    "ER Small Laser (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "M-Pod": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 15,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "ER Small Laser (Body)": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Rocket Launcher 1 (Body)": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Sniper": {
+        "mediumrange": 2,
+        "longRange": 18,
+        "damage": -5,
+        "heat": 10,
+        "shortRange": 1
+    },
+    "MRM 10": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Enhanced LRM 5": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Medium X-Pulse Laser (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 6,
+        "heat": 6,
+        "shortRange": 3
+    },
+    "Medium X-Pulse Laser": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 6,
+        "heat": 6,
+        "shortRange": 3
+    },
+    "Medium Recoilless Rifle (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Light Machine Gun (ST)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Sniper Cannon": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -5,
+        "heat": 10,
+        "shortRange": 4
+    },
+    "Rocket Launcher 20": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 3
+    },
+    "Light Machine Gun Array": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "AMS (R)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 1,
+        "heat": 1,
+        "shortRange": 0
+    },
+    "Rocket Launcher 15 (PP) (Clan)": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "Support PPC (Body)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Bombast Laser": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 12,
+        "heat": 12,
+        "shortRange": 5
+    },
+    "Rocket Launcher 4 (Body)": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Medium Pulse Laser (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 7,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "C3 Master with TAG": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 5
+    },
+    "Rocket Launcher 15": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "Small Laser (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "SRM 2 (OS)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Flamer": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Machine Gun (ST)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Enhanced LRM 20": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 7
+    },
+    "Rocket Launcher 10": {
+        "mediumrange": 11,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 5
+    },
+    "Medium Laser (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 5,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Ultra AC\/10 (Clan)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 3,
+        "shortRange": 6
+    },
+    "Flamer (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "SRM 4 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "LAC\/5": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 5
+    },
+    "iNarc": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "SRM 1 (OS)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "LB 5-X AC": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "LAC\/2": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 6
+    },
+    "David Light Gauss Rifle": {
+        "mediumrange": 5,
+        "longRange": 8,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "LRT 10": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 0
+    },
+    "Medium VSP Laser": {
+        "mediumrange": 5,
+        "longRange": 9,
+        "damage": -3,
+        "heat": 7,
+        "shortRange": 2
+    },
+    "SRM 1": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Small Laser (R)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "ER Flamer": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Rotary AC\/5": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 5
+    },
+    "Rotary AC\/2": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 6
+    },
+    "Heavy Grenade Launcher": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "LB 20-X AC": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 20,
+        "heat": 6,
+        "shortRange": 4
+    },
+    "LRM 4 (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 7
+    },
+    "SRM 4": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "ER Medium Laser (Body)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "SRM 2": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "ER Medium Pulse Laser (Body) (DWP) (Clan)": {
+        "mediumrange": 9,
+        "longRange": 14,
+        "damage": 7,
+        "heat": 6,
+        "shortRange": 5
+    },
+    "SRM 6": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "SRM 5 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "MRM 40": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 12,
+        "shortRange": 3
+    },
+    "Light Recoilless Rifle": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Gauss Rifle": {
+        "mediumrange": 15,
+        "longRange": 22,
+        "damage": 15,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "Heavy Recoilless Rifle (Body)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "SRT 2": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 0
+    },
+    "HVAC\/10": {
+        "mediumrange": 12,
+        "longRange": 20,
+        "damage": 10,
+        "heat": 7,
+        "shortRange": 6
+    },
+    "SRT 4": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 0
+    },
+    "Large Laser": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 8,
+        "heat": 8,
+        "shortRange": 5
+    },
+    "Extended LRM 20": {
+        "mediumrange": 22,
+        "longRange": 38,
+        "damage": -2,
+        "heat": 10,
+        "shortRange": 12
+    },
+    "MagShot (ST)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 3
+    },
+    "SRM 3 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Small Pulse Laser": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 1
+    },
+    "Streak SRM 4 (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Extended LRM 15": {
+        "mediumrange": 22,
+        "longRange": 38,
+        "damage": -2,
+        "heat": 8,
+        "shortRange": 12
+    },
+    "Machine Gun (R)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "PPC": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 10,
+        "shortRange": 6
+    },
+    "MRM 30": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 10,
+        "shortRange": 3
+    },
+    "Plasma Rifle (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Vehicle Flamer": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Small Pulse Laser (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 1
+    },
+    "Rocket Launcher 10 (PP) (Clan)": {
+        "mediumrange": 11,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 5
+    },
+    "Heavy Grenade Launcher (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Small X-Pulse Laser": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 3,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "Light Machine Gun": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Heavy PPC": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 15,
+        "heat": 15,
+        "shortRange": 6
+    },
+    "LRM 15 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Medium Pulse Laser (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 6,
+        "heat": 4,
+        "shortRange": 2
+    },
+    "MagShot": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 3
+    },
+    "Micro Grenade Launcher": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "MRM 20": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 3
+    },
+    "AMS": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 1,
+        "heat": 1,
+        "shortRange": 0
+    },
+    "Ultra AC\/5": {
+        "mediumrange": 13,
+        "longRange": 20,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 6
+    },
+    "Firedrake Needler (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Ultra AC\/2": {
+        "mediumrange": 17,
+        "longRange": 25,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "Large VSP Laser": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -3,
+        "heat": 10,
+        "shortRange": 4
+    },
+    "Infantry Auto Rifle": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Heavy Machine Gun Array": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "LRM 20": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 7
+    },
+    "MML 7 (T)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 0
+    },
+    "LB 2-X AC": {
+        "mediumrange": 18,
+        "longRange": 27,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 9
+    },
+    "Tsunami Heavy Gauss Rifle": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "ER Flamer (Clan)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Rocket Launcher 4": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Magshot (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "AC\/10": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 10,
+        "heat": 3,
+        "shortRange": 5
+    },
+    "Light Mortar (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "SRM 6 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Leg Attack": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Medium Laser": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 5,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Light Recoilless Rifle (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Long Tom": {
+        "mediumrange": 2,
+        "longRange": 30,
+        "damage": -5,
+        "heat": 20,
+        "shortRange": 1
+    },
+    "MRM 1 (Body)": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "AC\/2": {
+        "mediumrange": 16,
+        "longRange": 24,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "LRM 15": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "LRM 10": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 7
+    },
+    "AC\/5": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 6
+    },
+    "Silver Bullet Gauss Rifle": {
+        "mediumrange": 15,
+        "longRange": 22,
+        "damage": 15,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "Thunderbolt 15": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 7,
+        "shortRange": 6
+    },
+    "SRM 3 (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Mech Taser": {
+        "mediumrange": 2,
+        "longRange": 4,
+        "damage": 1,
+        "heat": 6,
+        "shortRange": 1
+    },
+    "Thunderbolt 10": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 6
+    },
+    "SRM 4 (ST)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Snub-Nose PPC": {
+        "mediumrange": 13,
+        "longRange": 15,
+        "damage": -3,
+        "heat": 10,
+        "shortRange": 9
+    },
+    "Rocket Launcher 5 (Body)": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Blazer Cannon": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 12,
+        "heat": 16,
+        "shortRange": 5
+    },
+    "LB 10-X AC": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 2,
+        "shortRange": 6
+    },
+    "Heavy Machine Gun (Body)": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "TAG": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 5
+    },
+    "Light PPC": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 6
+    },
+    "ER PPC (Clan)": {
+        "mediumrange": 14,
+        "longRange": 23,
+        "damage": 15,
+        "heat": 15,
+        "shortRange": 7
+    },
+    "SRM 4 (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Heavy Flamer": {
+        "mediumrange": 3,
+        "longRange": 4,
+        "damage": 4,
+        "heat": 5,
+        "shortRange": 2
+    },
+    "King David Light Gauss Rifle (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Thunderbolt 20": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 8,
+        "shortRange": 6
+    },
+    "Medium Recoilless Rifle": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Thumper": {
+        "mediumrange": 2,
+        "longRange": 21,
+        "damage": -5,
+        "heat": 5,
+        "shortRange": 1
+    },
+    "SRM 5 (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "AC\/20": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 20,
+        "heat": 7,
+        "shortRange": 3
+    },
+    "Rotary AC\/5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 7
+    }
+}, "clan": {
+    "ER Small Pulse Laser (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "Medium Recoilless Rifle (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "LB 2-X AC (Clan)": {
+        "mediumrange": 20,
+        "longRange": 30,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 10
+    },
+    "Streak SRM 2 (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 4
+    },
+    "Bearhunter Superheavy AC": {
+        "mediumrange": 1,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Gauss Rifle (Clan)": {
+        "mediumrange": 15,
+        "longRange": 22,
+        "damage": 15,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "Heavy Recoilless Rifle (Clan)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Medium Pulse Laser (Body) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 7,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "AP Gauss Rifle (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 3
+    },
+    "LRM 10 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 7
+    },
+    "Heavy Flamer (Clan)": {
+        "mediumrange": 3,
+        "longRange": 4,
+        "damage": 4,
+        "heat": 5,
+        "shortRange": 2
+    },
+    "ER Medium Laser (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 7,
+        "heat": 5,
+        "shortRange": 5
+    },
+    "LB 10-X AC (Clan)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 2,
+        "shortRange": 6
+    },
+    "Arrow IV (Clan)": {
+        "mediumrange": 2,
+        "longRange": 9,
+        "damage": -5,
+        "heat": 10,
+        "shortRange": 1
+    },
+    "LB 5-X AC (Clan)": {
+        "mediumrange": 15,
+        "longRange": 24,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "LRM 4 (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 7
+    },
+    "Heavy Machine Gun (Clan)": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "ER Small Laser (R) (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Machine Gun (R) (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Light Machine Gun Array (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "SRM 5 (OS) (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Laser AMS (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 2,
+        "heat": 5,
+        "shortRange": 0
+    },
+    "Small Laser": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "ER Large Laser (Clan)": {
+        "mediumrange": 15,
+        "longRange": 25,
+        "damage": 10,
+        "heat": 12,
+        "shortRange": 8
+    },
+    "Flamer (R) (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Machine Gun Array (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Narc (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "LRM 20 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 7
+    },
+    "Attack Swarmed Mek": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Micro Pulse Laser (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "ER Large Pulse Laser (Clan)": {
+        "mediumrange": 15,
+        "longRange": 23,
+        "damage": 10,
+        "heat": 13,
+        "shortRange": 7
+    },
+    "Light Recoilless Rifle (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "SRM 3 (OS) (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Plasma Cannon (Clan)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -3,
+        "heat": 7,
+        "shortRange": 6
+    },
+    "Clan TAG (Clan)": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 5
+    },
+    "AMS (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 0
+    },
+    "Streak SRM 4 (OS) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 4
+    },
+    "Ultra AC\/5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "LRM 5 (OS) (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Mortar 8": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 0,
+        "heat": 10,
+        "shortRange": 7
+    },
+    "HAG\/20 (Clan)": {
+        "mediumrange": 16,
+        "longRange": 24,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 8
+    },
+    "Streak LRM 15 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Large Pulse Laser (Clan)": {
+        "mediumrange": 14,
+        "longRange": 20,
+        "damage": 10,
+        "heat": 10,
+        "shortRange": 6
+    },
+    "B-Pod (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "ATM 3 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 5
+    },
+    "SRM 2 (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Streak LRM 5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Swarm Mek": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Flamer (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Light Machine Gun (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "LRM 15 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "LRM 3 (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 7
+    },
+    "LRM 2 (OS) (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 7
+    },
+    "Improved Heavy Large Laser (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 16,
+        "heat": 18,
+        "shortRange": 5
+    },
+    "Rotary AC\/2 (Clan)": {
+        "mediumrange": 17,
+        "longRange": 25,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "SRM 5 (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Advanced SRM 2 (Body) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "LRM 5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Ultra AC\/20 (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 20,
+        "heat": 7,
+        "shortRange": 4
+    },
+    "Advanced SRM 6 (Body) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "Stop Swarm Attack": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Infantry Auto Rifle": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "ER Flamer (Clan)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "HAG\/40 (Clan)": {
+        "mediumrange": 16,
+        "longRange": 24,
+        "damage": -2,
+        "heat": 8,
+        "shortRange": 8
+    },
+    "ProtoMech AC\/4 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 4,
+        "heat": 1,
+        "shortRange": 5
+    },
+    "ER Small Laser (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Leg Attack": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Machine Gun (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Streak SRM 6 (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "LB 20-X AC (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 20,
+        "heat": 6,
+        "shortRange": 4
+    },
+    "Ultra AC\/2 (Clan)": {
+        "mediumrange": 18,
+        "longRange": 27,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 9
+    },
+    "ER Micro Laser (Clan)": {
+        "mediumrange": 2,
+        "longRange": 4,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "Heavy Large Laser (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 16,
+        "heat": 18,
+        "shortRange": 5
+    },
+    "Heavy Medium Laser (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 10,
+        "heat": 7,
+        "shortRange": 3
+    },
+    "Vehicle Flamer (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "SRT 6 (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 0
+    },
+    "Improved Heavy Medium Laser (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 10,
+        "heat": 7,
+        "shortRange": 3
+    },
+    "HAG\/30 (Clan)": {
+        "mediumrange": 16,
+        "longRange": 24,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 8
+    },
+    "SRM 2 (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "ATM 6 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 5
+    },
+    "Mech Taser": {
+        "mediumrange": 2,
+        "longRange": 4,
+        "damage": 1,
+        "heat": 6,
+        "shortRange": 1
+    },
+    "SRM 3 (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Streak SRM 6 (R) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "Streak LRM 20 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 7
+    },
+    "SRM 1 (OS) (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Improved Heavy Small Laser (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 6,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "AP Gauss Rifle (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 3
+    },
+    "Streak SRM 4 (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 4
+    },
+    "SRM 6 (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Bombast Laser": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 12,
+        "heat": 12,
+        "shortRange": 5
+    },
+    "Medium Pulse Laser (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 7,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "Advanced SRM 5 (Body) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "ER PPC (Clan)": {
+        "mediumrange": 14,
+        "longRange": 23,
+        "damage": 15,
+        "heat": 15,
+        "shortRange": 7
+    },
+    "Heavy Machine Gun Array (Clan)": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Medium Pulse Laser (R) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 7,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "SRM 4 (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "ER Medium Laser (R) (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 7,
+        "heat": 5,
+        "shortRange": 5
+    },
+    "Small Pulse Laser (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "ATM 9 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 5
+    },
+    "Ultra AC\/10 (Clan)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 3,
+        "shortRange": 6
+    },
+    "Micro Bomb (Body) (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -3,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Streak LRM 10 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 7
+    },
+    "ATM 12 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 8,
+        "shortRange": 5
+    },
+    "Heavy Small Laser (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 6,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "ER Medium Pulse Laser (Clan)": {
+        "mediumrange": 9,
+        "longRange": 14,
+        "damage": 7,
+        "heat": 6,
+        "shortRange": 5
+    },
+    "Light TAG (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Rotary AC\/5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 7
+    }
+}};});
+
+define('tpl!templates/unit/unitRanges.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="weaponryRange span8"></div>');}return __p.join('');}});
+
 /**
  * Created with IntelliJ IDEA.
- * User: AndrewSheedy
- * Date: 16/02/13
- * Time: 10:56 PM
+ * User: drew
+ * Date: 9/17/13
+ * Time: 4:00 PM
+ * To change this template use File | Settings | File Templates.
  */
-define('views/viewport/EntityDetail',[
+define('views/unit/UnitRanges',[
     'underscore',
     'marionette',
+    'highcharts',
 
-    'tpl!templates/viewport/entityDetail.html',
-    'tpl!templates/viewport/entitySlot.html',
-    'tpl!templates/viewport/entityWeapons.html',
-    'highcharts'
-], function (_, Marionette, entityTemplate, entitySlotTemplate, entityWeapons) {
-    "use strict";
+    'json!../../../data/weapons.json',
+    'tpl!templates/unit/unitRanges.html'
 
-    function renderHelper(searchThis, forThese, renderThis, inThis, location) {
-        _.each(forThese, function (v, i) {
-            var w = searchThis[v];
-            if (!!w) {
-                w.name = v;
-                w.location = location;
-                inThis.append(renderThis(w));
-            }
-        });
-    }
-
-    function collationHelper(searchThis, forThese, collateToThis) {
-        _.each(forThese, function (v, i) {
-            var w = searchThis[v];
-            if (!!w) {
-                var t = {};
-
-                // name is easy
-                t.name = v;
-
-                // min range
-                if (w.minimumRange == undefined) {
-                    w.minimumRange = 0;
-                }
-                t.minimumRange = (w.minimumRange);
-
-                // short range
-                t.shortRange = (w.shortRange);
-
-                // medium range
-                t.mediumRange = (w.mediumRange);
-
-                // long range
-                t.longRange = (w.longRange);
-
-
-                collateToThis.push(t);
-            }
-        });
-    }
-
+], function (_, Marionette, highcharts, weaponry, template) {
     return Marionette.ItemView.extend({
-        template: entityTemplate,
+        template: template,
 
         ui: {
-            HD: '.slot-HD',
-            LA: '.slot-LA',
-            LT: '.slot-LT',
-            LTR: '.slot-LTR',
-            CT: '.slot-CT',
-            CTR: '.slot-CTR',
-            RT: '.slot-RT',
-            RTR: '.slot-RTR',
-            RA: '.slot-RA',
-            LL: '.slot-LL',
-            RL: '.slot-RL',
-
-            FLL: '.slot-FLL',
-            FRL: '.slot-FRL',
-            RLL: '.slot-RLL',
-            RRL: '.slot-RRL',
-
-
-            WL: '.weaponList',
-            weaponRanges: '.weaponRange',
-
-            notQuad: '.notQuad',
-            isQuad: '.isQuad'
+            weaponryRange: '.weaponryRange'
         },
 
-        initialize: function (opts) {
-            this.weapons = opts.weapons;
-        },
-
-        onDomRefresh: function () {
-
-            var equips = this.model.get('location');
-
-            var clanOrIS;
+        onRender: function () {
+            var unitType = 'is';
             if (this.model.get('isClan')) {
-                clanOrIS = 'clan';
-            } else {
-                clanOrIS = 'is';
+                unitType = 'clan';
             }
+
 
             var rawData = [];
-
-            for (var location in equips) {
-                var payload = equips[location];
-                this.renderSlot(location, payload);
-                renderHelper(this.weapons[clanOrIS], payload.equipment.nonCriticals, entityWeapons, this.ui.WL, location);
-                collationHelper(this.weapons[clanOrIS], payload.equipment.nonCriticals, rawData);
-            }
+            _.each(this.model.get('weapons'), function (v, i) {
+                _.each(v, function (v2, i2) {
+                    // only include if it has a range.
+                    var weapon = weaponry[unitType][v2];
+                    if (weapon.longRange > 0) {
+                        weapon.name = v2;
+                        rawData.push(weapon);
+                    }
+                });
+            });
 
             var series = [
-                { name: 'Minimum Range', data: _.pluck(rawData, 'minimumRange'), color: 'black'},
+//                { name: 'Minimum Range', data: _.pluck(rawData, 'minimumRange'), color: 'black'},
                 { name: 'Short Range', data: _.pluck(rawData, 'shortRange'), color: 'blue'},
-                { name: 'Medium Range', data: _.pluck(rawData, 'mediumRange'), color: 'green'},
+                { name: 'Medium Range', data: _.pluck(rawData, 'mediumrange'), color: 'green'},
                 { name: 'Long Range', data: _.pluck(rawData, 'longRange'), color: 'orange'}
             ];
 
 
-            this.ui.weaponRanges.highcharts({
+            this.ui.weaponryRange.highcharts({
                 chart: {
                     type: 'bar'
                 },
@@ -32155,29 +37142,76 @@ define('views/viewport/EntityDetail',[
 
                 series: series
             });
+        }
 
-            if (equips.FRL) {
-                this.ui.notQuad.hide();
-                this.ui.isQuad.show();
-            } else {
-                this.ui.notQuad.show();
-                this.ui.isQuad.hide();
-            }
+    });
+});
+/**
+ * Created with IntelliJ IDEA.
+ * User: drew
+ * Date: 9/17/13
+ * Time: 4:00 PM
+ * To change this template use File | Settings | File Templates.
+ */
+define('views/unit/UnitSlotLayout',[
+    'marionette',
 
+    'tpl!templates/unit/default.html'
+
+], function (Marionette, template) {
+    return Marionette.ItemView.extend({
+        template: template
+    });
+});
+/**
+ * Created with IntelliJ IDEA.
+ * User: AndrewSheedy
+ * Date: 16/02/13
+ * Time: 10:56 PM
+ */
+define('views/viewport/UnitLayout',[
+    'marionette',
+
+    'tpl!templates/viewport/unitLayout.html',
+    'views/unit/UnitHeader',
+    'views/unit/UnitOverview',
+    'views/unit/UnitArmor',
+    'views/unit/UnitEquipment',
+    'views/unit/UnitAmmo',
+    'views/unit/UnitWeaponry',
+    'views/unit/UnitRanges',
+    'views/unit/UnitSlotLayout'
+], function (Marionette, template, UnitHeader, UnitOverview, UnitArmor, UnitEquipment, UnitAmmo, UnitWeaponry, UnitRanges, UnitSlotLayout) {
+    "use strict";
+
+    return Marionette.Layout.extend({
+        template: template,
+
+        regions: {
+            header: ".header",
+            overview: ".overview",
+            armor: ".armor",
+            equipment: ".equipment",
+            ammo: ".ammo",
+            weaponry: ".weaponry",
+            ranges: ".ranges",
+            slotLayout: ".slotLayout"
         },
 
-        handleLocation: function (location, payload) {
-            this.renderSlot(location, payload);
-
+        initialize: function (opts) {
+            this.weaponryList = opts.weapons;
         },
 
-        renderSlot: function (location, payload) {
-            var slot = this.ui[location];
-            slot.append(entitySlotTemplate(payload));
-        },
-
-        appendHtml: function (collectionView, itemView, index) {
-
+        onRender: function () {
+            var model = {model: this.model};
+            this.header.show(new UnitHeader(model));
+            this.overview.show(new UnitOverview(model));
+            this.armor.show(new UnitArmor(model));
+            this.equipment.show(new UnitEquipment(model));
+            this.ammo.show(new UnitAmmo(model));
+            this.weaponry.show(new UnitWeaponry(model));
+            this.ranges.show(new UnitRanges(model));
+            this.slotLayout.show(new UnitSlotLayout(model))
         }
 
     });
@@ -32185,7 +37219,7 @@ define('views/viewport/EntityDetail',[
 
 define('tpl!templates/viewport/entity.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="selectedEntities"></div>');}return __p.join('');}});
 
-define('tpl!templates/viewport/introduction.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<h1>Welcome</h1><p>This site is a fan based piece of work expressly for the gaming community of <a target="_blank"                                                                                   href="http://www.mekwarslegends.com/">http://www.mekwarslegends.com/</a></p><p>To get started, just start typing a variant model in the pane to the left.</p><p>The variants were last updated for the 7th Campaign on 19 August 2013.</p><h3>Changelog</h3><dl>    <dt>19/08/2013</dt>    <dd>        Big update in preparation for the 8th Cycle.        <ul>            <li>Support for clan weapons</li>            <li>Fix for why clan units where not displaying</li>            <li>More unit information</li>        </ul>    </dd>    <dt>03/05/2013</dt>    <dd>        <ul>            <li>Switched charting frameworks. Lots of fun stuff coming here.</li>        </ul>    </dd>    <dt>02-05-2013</dt>    <dd>        <ul>            <li>Locations added for weapons table</li>            <li>Fixed graph widths</li>            <li>Stopped the footer covering stuff</li>            <li>Removed overall armor value as it was just wrong</li>            <li>Reworking search pane for future functionality</li>        </ul>    </dd>    <dt>25-04-2013</dt>    <dd>        <ul>            <li>Support for variant imagery</li>            <li>Corrected issue for IE and FF (it works now)</li>            <li>Updated variants</li>            <li>Implemented Rear Armor</li>        </ul>    </dd>    <dt>22-04-2013</dt>    <dd>        <ul>            <li>Added this changelog</li>            <li>Fixed rendering of Quads</li>        </ul>    </dd></dl>');}return __p.join('');}});
+define('tpl!templates/viewport/introduction.html', function() {return function(obj) { var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<h1>Welcome</h1><p>This site is a fan based piece of work expressly for the gaming community of <a target="_blank"                                                                                   href="http://www.mekwarslegends.com/">http://www.mekwarslegends.com/</a></p><p>To get started, just start typing a variant model in the pane to the left.</p><p>The variants were last updated for the 7th Campaign on 19 August 2013.</p><h3>Changelog</h3><dl>    <dt>19/09/2013</dt>    <dd>        Big Update!        <ul>            <li>Now supports BA and Vees</li>            <li>Layouts revised for more stuff</li>            <li>Units are no longer indexed by model, but by their name</li>            <li>Removed URL bindings (it\'ll be back soon)</li>            <li>Lots and lots of internal data rework to make future aims possible</li>        </ul>    </dd>    <dt>19/08/2013</dt>    <dd>        Big update in preparation for the 8th Cycle.        <ul>            <li>Support for clan weapons</li>            <li>Fix for why clan units where not displaying</li>            <li>More unit information</li>        </ul>    </dd>    <dt>03/05/2013</dt>    <dd>        <ul>            <li>Switched charting frameworks. Lots of fun stuff coming here.</li>        </ul>    </dd>    <dt>02-05-2013</dt>    <dd>        <ul>            <li>Locations added for weapons table</li>            <li>Fixed graph widths</li>            <li>Stopped the footer covering stuff</li>            <li>Removed overall armor value as it was just wrong</li>            <li>Reworking search pane for future functionality</li>        </ul>    </dd>    <dt>25-04-2013</dt>    <dd>        <ul>            <li>Support for variant imagery</li>            <li>Corrected issue for IE and FF (it works now)</li>            <li>Updated variants</li>            <li>Implemented Rear Armor</li>        </ul>    </dd>    <dt>22-04-2013</dt>    <dd>        <ul>            <li>Added this changelog</li>            <li>Fixed rendering of Quads</li>        </ul>    </dd></dl>');}return __p.join('');}});
 
 /**
  * Created with IntelliJ IDEA.
@@ -32193,16 +37227,16 @@ define('tpl!templates/viewport/introduction.html', function() {return function(o
  * Date: 16/02/13
  * Time: 10:56 PM
  */
-define('views/viewport/MechDetailView',[
+define('views/viewport/UnitDetailView',[
     'marionette',
     'collections/EntityCollection',
-    'views/viewport/EntityDetail',
+    'views/viewport/UnitLayout',
 
     'tpl!templates/viewport/entity.html',
     'tpl!templates/viewport/introduction.html'
 
 
-], function (Marionette, EntityCollection, EntityDetailView, entityTemplate, emptyViewTemplate) {
+], function (Marionette, EntityCollection, UnitDetail, entityTemplate, emptyViewTemplate) {
     "use strict";
 
     var EmptyView = Marionette.ItemView.extend({
@@ -32214,12 +37248,11 @@ define('views/viewport/MechDetailView',[
 
         emptyView: EmptyView,
 
-        itemView: EntityDetailView,
+        itemView: UnitDetail,
+
         itemViewOptions: function () {
             return {weapons: this.weapons};
         },
-//        itemViewContainer: '.selectedEntities',
-
 
         initialize: function (opts) {
             this.collection = new EntityCollection();
@@ -32247,402 +37280,2242 @@ define('views/viewport/MechDetailView',[
         }
     });
 });
-/**
- * @license RequireJS text 2.0.5 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
- * Available via the MIT or new BSD license.
- * see: http://github.com/requirejs/text for details
- */
-/*jslint regexp: true */
-/*global require: false, XMLHttpRequest: false, ActiveXObject: false,
-  define: false, window: false, process: false, Packages: false,
-  java: false, location: false */
-
-define('text',['module'], function (module) {
-    'use strict';
-
-    var text, fs,
-        progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'],
-        xmlRegExp = /^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im,
-        bodyRegExp = /<body[^>]*>\s*([\s\S]+)\s*<\/body>/im,
-        hasLocation = typeof location !== 'undefined' && location.href,
-        defaultProtocol = hasLocation && location.protocol && location.protocol.replace(/\:/, ''),
-        defaultHostName = hasLocation && location.hostname,
-        defaultPort = hasLocation && (location.port || undefined),
-        buildMap = [],
-        masterConfig = (module.config && module.config()) || {};
-
-    text = {
-        version: '2.0.5',
-
-        strip: function (content) {
-            //Strips <?xml ...?> declarations so that external SVG and XML
-            //documents can be added to a document without worry. Also, if the string
-            //is an HTML document, only the part inside the body tag is returned.
-            if (content) {
-                content = content.replace(xmlRegExp, "");
-                var matches = content.match(bodyRegExp);
-                if (matches) {
-                    content = matches[1];
-                }
-            } else {
-                content = "";
-            }
-            return content;
-        },
-
-        jsEscape: function (content) {
-            return content.replace(/(['\\])/g, '\\$1')
-                .replace(/[\f]/g, "\\f")
-                .replace(/[\b]/g, "\\b")
-                .replace(/[\n]/g, "\\n")
-                .replace(/[\t]/g, "\\t")
-                .replace(/[\r]/g, "\\r")
-                .replace(/[\u2028]/g, "\\u2028")
-                .replace(/[\u2029]/g, "\\u2029");
-        },
-
-        createXhr: masterConfig.createXhr || function () {
-            //Would love to dump the ActiveX crap in here. Need IE 6 to die first.
-            var xhr, i, progId;
-            if (typeof XMLHttpRequest !== "undefined") {
-                return new XMLHttpRequest();
-            } else if (typeof ActiveXObject !== "undefined") {
-                for (i = 0; i < 3; i += 1) {
-                    progId = progIds[i];
-                    try {
-                        xhr = new ActiveXObject(progId);
-                    } catch (e) {}
-
-                    if (xhr) {
-                        progIds = [progId];  // so faster next time
-                        break;
-                    }
-                }
-            }
-
-            return xhr;
-        },
-
-        /**
-         * Parses a resource name into its component parts. Resource names
-         * look like: module/name.ext!strip, where the !strip part is
-         * optional.
-         * @param {String} name the resource name
-         * @returns {Object} with properties "moduleName", "ext" and "strip"
-         * where strip is a boolean.
-         */
-        parseName: function (name) {
-            var modName, ext, temp,
-                strip = false,
-                index = name.indexOf("."),
-                isRelative = name.indexOf('./') === 0 ||
-                             name.indexOf('../') === 0;
-
-            if (index !== -1 && (!isRelative || index > 1)) {
-                modName = name.substring(0, index);
-                ext = name.substring(index + 1, name.length);
-            } else {
-                modName = name;
-            }
-
-            temp = ext || modName;
-            index = temp.indexOf("!");
-            if (index !== -1) {
-                //Pull off the strip arg.
-                strip = temp.substring(index + 1) === "strip";
-                temp = temp.substring(0, index);
-                if (ext) {
-                    ext = temp;
-                } else {
-                    modName = temp;
-                }
-            }
-
-            return {
-                moduleName: modName,
-                ext: ext,
-                strip: strip
-            };
-        },
-
-        xdRegExp: /^((\w+)\:)?\/\/([^\/\\]+)/,
-
-        /**
-         * Is an URL on another domain. Only works for browser use, returns
-         * false in non-browser environments. Only used to know if an
-         * optimized .js version of a text resource should be loaded
-         * instead.
-         * @param {String} url
-         * @returns Boolean
-         */
-        useXhr: function (url, protocol, hostname, port) {
-            var uProtocol, uHostName, uPort,
-                match = text.xdRegExp.exec(url);
-            if (!match) {
-                return true;
-            }
-            uProtocol = match[2];
-            uHostName = match[3];
-
-            uHostName = uHostName.split(':');
-            uPort = uHostName[1];
-            uHostName = uHostName[0];
-
-            return (!uProtocol || uProtocol === protocol) &&
-                   (!uHostName || uHostName.toLowerCase() === hostname.toLowerCase()) &&
-                   ((!uPort && !uHostName) || uPort === port);
-        },
-
-        finishLoad: function (name, strip, content, onLoad) {
-            content = strip ? text.strip(content) : content;
-            if (masterConfig.isBuild) {
-                buildMap[name] = content;
-            }
-            onLoad(content);
-        },
-
-        load: function (name, req, onLoad, config) {
-            //Name has format: some.module.filext!strip
-            //The strip part is optional.
-            //if strip is present, then that means only get the string contents
-            //inside a body tag in an HTML string. For XML/SVG content it means
-            //removing the <?xml ...?> declarations so the content can be inserted
-            //into the current doc without problems.
-
-            // Do not bother with the work if a build and text will
-            // not be inlined.
-            if (config.isBuild && !config.inlineText) {
-                onLoad();
-                return;
-            }
-
-            masterConfig.isBuild = config.isBuild;
-
-            var parsed = text.parseName(name),
-                nonStripName = parsed.moduleName +
-                    (parsed.ext ? '.' + parsed.ext : ''),
-                url = req.toUrl(nonStripName),
-                useXhr = (masterConfig.useXhr) ||
-                         text.useXhr;
-
-            //Load the text. Use XHR if possible and in a browser.
-            if (!hasLocation || useXhr(url, defaultProtocol, defaultHostName, defaultPort)) {
-                text.get(url, function (content) {
-                    text.finishLoad(name, parsed.strip, content, onLoad);
-                }, function (err) {
-                    if (onLoad.error) {
-                        onLoad.error(err);
-                    }
-                });
-            } else {
-                //Need to fetch the resource across domains. Assume
-                //the resource has been optimized into a JS module. Fetch
-                //by the module name + extension, but do not include the
-                //!strip part to avoid file system issues.
-                req([nonStripName], function (content) {
-                    text.finishLoad(parsed.moduleName + '.' + parsed.ext,
-                                    parsed.strip, content, onLoad);
-                });
-            }
-        },
-
-        write: function (pluginName, moduleName, write, config) {
-            if (buildMap.hasOwnProperty(moduleName)) {
-                var content = text.jsEscape(buildMap[moduleName]);
-                write.asModule(pluginName + "!" + moduleName,
-                               "define(function () { return '" +
-                                   content +
-                               "';});\n");
-            }
-        },
-
-        writeFile: function (pluginName, moduleName, req, write, config) {
-            var parsed = text.parseName(moduleName),
-                extPart = parsed.ext ? '.' + parsed.ext : '',
-                nonStripName = parsed.moduleName + extPart,
-                //Use a '.js' file name so that it indicates it is a
-                //script that can be loaded across domains.
-                fileName = req.toUrl(parsed.moduleName + extPart) + '.js';
-
-            //Leverage own load() method to load plugin value, but only
-            //write out values that do not have the strip argument,
-            //to avoid any potential issues with ! in file names.
-            text.load(nonStripName, req, function (value) {
-                //Use own write() method to construct full module value.
-                //But need to create shell that translates writeFile's
-                //write() to the right interface.
-                var textWrite = function (contents) {
-                    return write(fileName, contents);
-                };
-                textWrite.asModule = function (moduleName, contents) {
-                    return write.asModule(moduleName, fileName, contents);
-                };
-
-                text.write(pluginName, nonStripName, textWrite, config);
-            }, config);
-        }
-    };
-
-    if (masterConfig.env === 'node' || (!masterConfig.env &&
-            typeof process !== "undefined" &&
-            process.versions &&
-            !!process.versions.node)) {
-        //Using special require.nodeRequire, something added by r.js.
-        fs = require.nodeRequire('fs');
-
-        text.get = function (url, callback) {
-            var file = fs.readFileSync(url, 'utf8');
-            //Remove BOM (Byte Mark Order) from utf8 files if it is there.
-            if (file.indexOf('\uFEFF') === 0) {
-                file = file.substring(1);
-            }
-            callback(file);
-        };
-    } else if (masterConfig.env === 'xhr' || (!masterConfig.env &&
-            text.createXhr())) {
-        text.get = function (url, callback, errback, headers) {
-            var xhr = text.createXhr(), header;
-            xhr.open('GET', url, true);
-
-            //Allow plugins direct access to xhr headers
-            if (headers) {
-                for (header in headers) {
-                    if (headers.hasOwnProperty(header)) {
-                        xhr.setRequestHeader(header.toLowerCase(), headers[header]);
-                    }
-                }
-            }
-
-            //Allow overrides specified in config
-            if (masterConfig.onXhr) {
-                masterConfig.onXhr(xhr, url);
-            }
-
-            xhr.onreadystatechange = function (evt) {
-                var status, err;
-                //Do not explicitly handle errors, those should be
-                //visible via console output in the browser.
-                if (xhr.readyState === 4) {
-                    status = xhr.status;
-                    if (status > 399 && status < 600) {
-                        //An http 4xx or 5xx error. Signal an error.
-                        err = new Error(url + ' HTTP status: ' + status);
-                        err.xhr = xhr;
-                        errback(err);
-                    } else {
-                        callback(xhr.responseText);
-                    }
-                }
-            };
-            xhr.send(null);
-        };
-    } else if (masterConfig.env === 'rhino' || (!masterConfig.env &&
-            typeof Packages !== 'undefined' && typeof java !== 'undefined')) {
-        //Why Java, why is this so awkward?
-        text.get = function (url, callback) {
-            var stringBuffer, line,
-                encoding = "utf-8",
-                file = new java.io.File(url),
-                lineSeparator = java.lang.System.getProperty("line.separator"),
-                input = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(file), encoding)),
-                content = '';
-            try {
-                stringBuffer = new java.lang.StringBuffer();
-                line = input.readLine();
-
-                // Byte Order Mark (BOM) - The Unicode Standard, version 3.0, page 324
-                // http://www.unicode.org/faq/utf_bom.html
-
-                // Note that when we use utf-8, the BOM should appear as "EF BB BF", but it doesn't due to this bug in the JDK:
-                // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4508058
-                if (line && line.length() && line.charAt(0) === 0xfeff) {
-                    // Eat the BOM, since we've already found the encoding on this file,
-                    // and we plan to concatenating this buffer with others; the BOM should
-                    // only appear at the top of a file.
-                    line = line.substring(1);
-                }
-
-                stringBuffer.append(line);
-
-                while ((line = input.readLine()) !== null) {
-                    stringBuffer.append(lineSeparator);
-                    stringBuffer.append(line);
-                }
-                //Make sure we return a JavaScript string and not a Java string.
-                content = String(stringBuffer.toString()); //String
-            } finally {
-                input.close();
-            }
-            callback(content);
-        };
+define("json!../data/weapons.json", function(){ return {"is": {
+    "Narc": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "B-Pod": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "SRM 2 (ST)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "LRM 15 (ST)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Heavy Machine Gun": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Long Tom Cannon": {
+        "mediumrange": 13,
+        "longRange": 20,
+        "damage": -5,
+        "heat": 20,
+        "shortRange": 6
+    },
+    "ER Medium Laser (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 7,
+        "heat": 5,
+        "shortRange": 5
+    },
+    "ER PPC": {
+        "mediumrange": 14,
+        "longRange": 23,
+        "damage": 10,
+        "heat": 15,
+        "shortRange": 7
+    },
+    "ER Small Laser": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Heavy Mortar (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Pop-up Mine": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Rocket Launcher 20 (PP) (Clan)": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 3
+    },
+    "Arrow IV": {
+        "mediumrange": 2,
+        "longRange": 8,
+        "damage": -5,
+        "heat": 10,
+        "shortRange": 1
+    },
+    "ER Medium Laser (T)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "MML 9": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 0
+    },
+    "MML 7": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 0
+    },
+    "Streak SRM 2 (OS)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Light PPC (T)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 6
+    },
+    "MML 5": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 0
+    },
+    "Magshot": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "ER Medium Laser": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "Small VSP Laser (R)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": -3,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "Light Gauss Rifle": {
+        "mediumrange": 17,
+        "longRange": 25,
+        "damage": 8,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "ER Small Laser (R) (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "IS Light TAG (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Laser AMS": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 2,
+        "heat": 7,
+        "shortRange": 0
+    },
+    "Light Machine Gun Array (ST)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Small Laser": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "Heavy Gauss Rifle": {
+        "mediumrange": 13,
+        "longRange": 20,
+        "damage": -3,
+        "heat": 2,
+        "shortRange": 6
+    },
+    "Thunderbolt 5": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 6
+    },
+    "Small VSP Laser": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": -3,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "Firedrake Needler": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Attack Swarmed Mek": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Battle Armor Taser": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Flamer (R)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Pop-up Mine (Body)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "ER Small Laser (R)": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Medium Pulse Laser (R)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 6,
+        "heat": 4,
+        "shortRange": 2
+    },
+    "Ultra AC\/10": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 4,
+        "shortRange": 6
+    },
+    "Fluid Gun": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Streak SRM 2 (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Improved Heavy Gauss Rifle": {
+        "mediumrange": 12,
+        "longRange": 19,
+        "damage": 22,
+        "heat": 2,
+        "shortRange": 6
+    },
+    "Streak LRM 15 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Large Pulse Laser (Clan)": {
+        "mediumrange": 14,
+        "longRange": 20,
+        "damage": 10,
+        "heat": 10,
+        "shortRange": 6
+    },
+    "ER Medium Laser (R)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "Medium VSP Laser (R)": {
+        "mediumrange": 5,
+        "longRange": 9,
+        "damage": -3,
+        "heat": 7,
+        "shortRange": 2
+    },
+    "Streak SRM 4": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Rocket Launcher 10 (R)": {
+        "mediumrange": 11,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 5
+    },
+    "Plasma Rifle": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 10,
+        "heat": 10,
+        "shortRange": 5
+    },
+    "SRM 2 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Streak SRM 6": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "MML 3": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 0
+    },
+    "Streak SRM 2": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Machine Gun": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Machine Gun Array": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Ultra AC\/20": {
+        "mediumrange": 7,
+        "longRange": 10,
+        "damage": 20,
+        "heat": 8,
+        "shortRange": 3
+    },
+    "Swarm Mek": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "IS Light TAG": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "HVAC\/5": {
+        "mediumrange": 16,
+        "longRange": 28,
+        "damage": 5,
+        "heat": 3,
+        "shortRange": 8
+    },
+    "ER Large Laser": {
+        "mediumrange": 14,
+        "longRange": 19,
+        "damage": 8,
+        "heat": 12,
+        "shortRange": 7
+    },
+    "Medium Pulse Laser": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 6,
+        "heat": 4,
+        "shortRange": 2
+    },
+    "SRM 4 (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Large X-Pulse Laser": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 9,
+        "heat": 14,
+        "shortRange": 5
+    },
+    "Machine Gun (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "King David Light Gauss Rifle": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Support PPC": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Small VSP Laser (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": -3,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "SRM 4 (OS)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "LRM 5": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Small Pulse Laser (R)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 1
+    },
+    "Large Pulse Laser": {
+        "mediumrange": 7,
+        "longRange": 10,
+        "damage": 9,
+        "heat": 10,
+        "shortRange": 3
+    },
+    "Compact Narc": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Enhanced LRM 15": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Heavy Recoilless Rifle": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Stop Swarm Attack": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Gauss Rifle (T)": {
+        "mediumrange": 15,
+        "longRange": 22,
+        "damage": 15,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "Enhanced LRM 10": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 7
+    },
+    "Extended LRM 10": {
+        "mediumrange": 22,
+        "longRange": 38,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 12
+    },
+    "C3 Master Boosted with TAG": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 5
+    },
+    "ER Small Laser (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "M-Pod": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 15,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "ER Small Laser (Body)": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Rocket Launcher 1 (Body)": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Sniper": {
+        "mediumrange": 2,
+        "longRange": 18,
+        "damage": -5,
+        "heat": 10,
+        "shortRange": 1
+    },
+    "MRM 10": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Enhanced LRM 5": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Medium X-Pulse Laser (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 6,
+        "heat": 6,
+        "shortRange": 3
+    },
+    "Medium X-Pulse Laser": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 6,
+        "heat": 6,
+        "shortRange": 3
+    },
+    "Medium Recoilless Rifle (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Light Machine Gun (ST)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Sniper Cannon": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -5,
+        "heat": 10,
+        "shortRange": 4
+    },
+    "Rocket Launcher 20": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 3
+    },
+    "Light Machine Gun Array": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "AMS (R)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 1,
+        "heat": 1,
+        "shortRange": 0
+    },
+    "Rocket Launcher 15 (PP) (Clan)": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "Support PPC (Body)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Bombast Laser": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 12,
+        "heat": 12,
+        "shortRange": 5
+    },
+    "Rocket Launcher 4 (Body)": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Medium Pulse Laser (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 7,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "C3 Master with TAG": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 5
+    },
+    "Rocket Launcher 15": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "Small Laser (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "SRM 2 (OS)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Flamer": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Machine Gun (ST)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Enhanced LRM 20": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 7
+    },
+    "Rocket Launcher 10": {
+        "mediumrange": 11,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 5
+    },
+    "Medium Laser (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 5,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Ultra AC\/10 (Clan)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 3,
+        "shortRange": 6
+    },
+    "Flamer (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "SRM 4 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "LAC\/5": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 5
+    },
+    "iNarc": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "SRM 1 (OS)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "LB 5-X AC": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "LAC\/2": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 6
+    },
+    "David Light Gauss Rifle": {
+        "mediumrange": 5,
+        "longRange": 8,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "LRT 10": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 0
+    },
+    "Medium VSP Laser": {
+        "mediumrange": 5,
+        "longRange": 9,
+        "damage": -3,
+        "heat": 7,
+        "shortRange": 2
+    },
+    "SRM 1": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Small Laser (R)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "ER Flamer": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Rotary AC\/5": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 5
+    },
+    "Rotary AC\/2": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 6
+    },
+    "Heavy Grenade Launcher": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "LB 20-X AC": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 20,
+        "heat": 6,
+        "shortRange": 4
+    },
+    "LRM 4 (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 7
+    },
+    "SRM 4": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "ER Medium Laser (Body)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 4
+    },
+    "SRM 2": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "ER Medium Pulse Laser (Body) (DWP) (Clan)": {
+        "mediumrange": 9,
+        "longRange": 14,
+        "damage": 7,
+        "heat": 6,
+        "shortRange": 5
+    },
+    "SRM 6": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "SRM 5 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "MRM 40": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 12,
+        "shortRange": 3
+    },
+    "Light Recoilless Rifle": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Gauss Rifle": {
+        "mediumrange": 15,
+        "longRange": 22,
+        "damage": 15,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "Heavy Recoilless Rifle (Body)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "SRT 2": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 0
+    },
+    "HVAC\/10": {
+        "mediumrange": 12,
+        "longRange": 20,
+        "damage": 10,
+        "heat": 7,
+        "shortRange": 6
+    },
+    "SRT 4": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 0
+    },
+    "Large Laser": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 8,
+        "heat": 8,
+        "shortRange": 5
+    },
+    "Extended LRM 20": {
+        "mediumrange": 22,
+        "longRange": 38,
+        "damage": -2,
+        "heat": 10,
+        "shortRange": 12
+    },
+    "MagShot (ST)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 3
+    },
+    "SRM 3 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Small Pulse Laser": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 1
+    },
+    "Streak SRM 4 (R)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Extended LRM 15": {
+        "mediumrange": 22,
+        "longRange": 38,
+        "damage": -2,
+        "heat": 8,
+        "shortRange": 12
+    },
+    "Machine Gun (R)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "PPC": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 10,
+        "shortRange": 6
+    },
+    "MRM 30": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 10,
+        "shortRange": 3
+    },
+    "Plasma Rifle (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Vehicle Flamer": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Small Pulse Laser (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 1
+    },
+    "Rocket Launcher 10 (PP) (Clan)": {
+        "mediumrange": 11,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 5
+    },
+    "Heavy Grenade Launcher (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Small X-Pulse Laser": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 3,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "Light Machine Gun": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Heavy PPC": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 15,
+        "heat": 15,
+        "shortRange": 6
+    },
+    "LRM 15 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Medium Pulse Laser (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 6,
+        "heat": 4,
+        "shortRange": 2
+    },
+    "MagShot": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 3
+    },
+    "Micro Grenade Launcher": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "MRM 20": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 3
+    },
+    "AMS": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 1,
+        "heat": 1,
+        "shortRange": 0
+    },
+    "Ultra AC\/5": {
+        "mediumrange": 13,
+        "longRange": 20,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 6
+    },
+    "Firedrake Needler (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Ultra AC\/2": {
+        "mediumrange": 17,
+        "longRange": 25,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "Large VSP Laser": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -3,
+        "heat": 10,
+        "shortRange": 4
+    },
+    "Infantry Auto Rifle": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Heavy Machine Gun Array": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "LRM 20": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 7
+    },
+    "MML 7 (T)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 0
+    },
+    "LB 2-X AC": {
+        "mediumrange": 18,
+        "longRange": 27,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 9
+    },
+    "Tsunami Heavy Gauss Rifle": {
+        "mediumrange": 4,
+        "longRange": 5,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "ER Flamer (Clan)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Rocket Launcher 4": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Magshot (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "AC\/10": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 10,
+        "heat": 3,
+        "shortRange": 5
+    },
+    "Light Mortar (Body)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "SRM 6 (OS) (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Leg Attack": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Medium Laser": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 5,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Light Recoilless Rifle (Body)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Long Tom": {
+        "mediumrange": 2,
+        "longRange": 30,
+        "damage": -5,
+        "heat": 20,
+        "shortRange": 1
+    },
+    "MRM 1 (Body)": {
+        "mediumrange": 8,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "AC\/2": {
+        "mediumrange": 16,
+        "longRange": 24,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "LRM 15": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "LRM 10": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 7
+    },
+    "AC\/5": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 6
+    },
+    "Silver Bullet Gauss Rifle": {
+        "mediumrange": 15,
+        "longRange": 22,
+        "damage": 15,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "Thunderbolt 15": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 7,
+        "shortRange": 6
+    },
+    "SRM 3 (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Mech Taser": {
+        "mediumrange": 2,
+        "longRange": 4,
+        "damage": 1,
+        "heat": 6,
+        "shortRange": 1
+    },
+    "Thunderbolt 10": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 6
+    },
+    "SRM 4 (ST)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Snub-Nose PPC": {
+        "mediumrange": 13,
+        "longRange": 15,
+        "damage": -3,
+        "heat": 10,
+        "shortRange": 9
+    },
+    "Rocket Launcher 5 (Body)": {
+        "mediumrange": 7,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Blazer Cannon": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 12,
+        "heat": 16,
+        "shortRange": 5
+    },
+    "LB 10-X AC": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 2,
+        "shortRange": 6
+    },
+    "Heavy Machine Gun (Body)": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "TAG": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 5
+    },
+    "Light PPC": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 5,
+        "heat": 5,
+        "shortRange": 6
+    },
+    "ER PPC (Clan)": {
+        "mediumrange": 14,
+        "longRange": 23,
+        "damage": 15,
+        "heat": 15,
+        "shortRange": 7
+    },
+    "SRM 4 (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "Heavy Flamer": {
+        "mediumrange": 3,
+        "longRange": 4,
+        "damage": 4,
+        "heat": 5,
+        "shortRange": 2
+    },
+    "King David Light Gauss Rifle (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Thunderbolt 20": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -2,
+        "heat": 8,
+        "shortRange": 6
+    },
+    "Medium Recoilless Rifle": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "Thumper": {
+        "mediumrange": 2,
+        "longRange": 21,
+        "damage": -5,
+        "heat": 5,
+        "shortRange": 1
+    },
+    "SRM 5 (Body)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "AC\/20": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 20,
+        "heat": 7,
+        "shortRange": 3
+    },
+    "Rotary AC\/5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 7
     }
-
-    return text;
-});
-
-/** @license
- * RequireJS plugin for loading JSON files
- * - depends on Text plugin and it was HEAVILY "inspired" by it as well.
- * Author: Miller Medeiros
- * Version: 0.3.1 (2013/02/04)
- * Released under the MIT license
- */
-define('json',['text'], function(text){
-
-    var CACHE_BUST_QUERY_PARAM = 'bust',
-        CACHE_BUST_FLAG = '!bust',
-        jsonParse = (typeof JSON !== 'undefined' && typeof JSON.parse === 'function')? JSON.parse : function(val){
-            return eval('('+ val +')'); //quick and dirty
-        },
-        buildMap = {};
-
-    function cacheBust(url){
-        url = url.replace(CACHE_BUST_FLAG, '');
-        url += (url.indexOf('?') < 0)? '?' : '&';
-        return url + CACHE_BUST_QUERY_PARAM +'='+ Math.round(2147483647 * Math.random());
+}, "clan": {
+    "ER Small Pulse Laser (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 3,
+        "shortRange": 2
+    },
+    "Medium Recoilless Rifle (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "LB 2-X AC (Clan)": {
+        "mediumrange": 20,
+        "longRange": 30,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 10
+    },
+    "Streak SRM 2 (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 4
+    },
+    "Bearhunter Superheavy AC": {
+        "mediumrange": 1,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Gauss Rifle (Clan)": {
+        "mediumrange": 15,
+        "longRange": 22,
+        "damage": 15,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "Heavy Recoilless Rifle (Clan)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Medium Pulse Laser (Body) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 7,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "AP Gauss Rifle (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 3
+    },
+    "LRM 10 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 7
+    },
+    "Heavy Flamer (Clan)": {
+        "mediumrange": 3,
+        "longRange": 4,
+        "damage": 4,
+        "heat": 5,
+        "shortRange": 2
+    },
+    "ER Medium Laser (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 7,
+        "heat": 5,
+        "shortRange": 5
+    },
+    "LB 10-X AC (Clan)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 2,
+        "shortRange": 6
+    },
+    "Arrow IV (Clan)": {
+        "mediumrange": 2,
+        "longRange": 9,
+        "damage": -5,
+        "heat": 10,
+        "shortRange": 1
+    },
+    "LB 5-X AC (Clan)": {
+        "mediumrange": 15,
+        "longRange": 24,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "LRM 4 (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 7
+    },
+    "Heavy Machine Gun (Clan)": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "ER Small Laser (R) (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Machine Gun (R) (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Light Machine Gun Array (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "SRM 5 (OS) (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Laser AMS (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 2,
+        "heat": 5,
+        "shortRange": 0
+    },
+    "Small Laser": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "ER Large Laser (Clan)": {
+        "mediumrange": 15,
+        "longRange": 25,
+        "damage": 10,
+        "heat": 12,
+        "shortRange": 8
+    },
+    "Flamer (R) (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Machine Gun Array (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Narc (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "LRM 20 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 7
+    },
+    "Attack Swarmed Mek": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Micro Pulse Laser (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "ER Large Pulse Laser (Clan)": {
+        "mediumrange": 15,
+        "longRange": 23,
+        "damage": 10,
+        "heat": 13,
+        "shortRange": 7
+    },
+    "Light Recoilless Rifle (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "SRM 3 (OS) (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Plasma Cannon (Clan)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": -3,
+        "heat": 7,
+        "shortRange": 6
+    },
+    "Clan TAG (Clan)": {
+        "mediumrange": 9,
+        "longRange": 15,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 5
+    },
+    "AMS (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 0
+    },
+    "Streak SRM 4 (OS) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 4
+    },
+    "Ultra AC\/5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 7
+    },
+    "LRM 5 (OS) (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Mortar 8": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 0,
+        "heat": 10,
+        "shortRange": 7
+    },
+    "HAG\/20 (Clan)": {
+        "mediumrange": 16,
+        "longRange": 24,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 8
+    },
+    "Streak LRM 15 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "Large Pulse Laser (Clan)": {
+        "mediumrange": 14,
+        "longRange": 20,
+        "damage": 10,
+        "heat": 10,
+        "shortRange": 6
+    },
+    "B-Pod (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "ATM 3 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 5
+    },
+    "SRM 2 (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "Streak LRM 5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Swarm Mek": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Flamer (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "Light Machine Gun (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 2
+    },
+    "LRM 15 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 5,
+        "shortRange": 7
+    },
+    "LRM 3 (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 7
+    },
+    "LRM 2 (OS) (Body) (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 7
+    },
+    "Improved Heavy Large Laser (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 16,
+        "heat": 18,
+        "shortRange": 5
+    },
+    "Rotary AC\/2 (Clan)": {
+        "mediumrange": 17,
+        "longRange": 25,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 8
+    },
+    "SRM 5 (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Advanced SRM 2 (Body) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "LRM 5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 7
+    },
+    "Ultra AC\/20 (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 20,
+        "heat": 7,
+        "shortRange": 4
+    },
+    "Advanced SRM 6 (Body) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "Stop Swarm Attack": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Infantry Auto Rifle": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 1,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "ER Flamer (Clan)": {
+        "mediumrange": 5,
+        "longRange": 7,
+        "damage": 2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "HAG\/40 (Clan)": {
+        "mediumrange": 16,
+        "longRange": 24,
+        "damage": -2,
+        "heat": 8,
+        "shortRange": 8
+    },
+    "ProtoMech AC\/4 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 4,
+        "heat": 1,
+        "shortRange": 5
+    },
+    "ER Small Laser (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 5,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "Leg Attack": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -4,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Machine Gun (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Streak SRM 6 (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "LB 20-X AC (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 20,
+        "heat": 6,
+        "shortRange": 4
+    },
+    "Ultra AC\/2 (Clan)": {
+        "mediumrange": 18,
+        "longRange": 27,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 9
+    },
+    "ER Micro Laser (Clan)": {
+        "mediumrange": 2,
+        "longRange": 4,
+        "damage": 2,
+        "heat": 1,
+        "shortRange": 1
+    },
+    "Heavy Large Laser (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 16,
+        "heat": 18,
+        "shortRange": 5
+    },
+    "Heavy Medium Laser (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 10,
+        "heat": 7,
+        "shortRange": 3
+    },
+    "Vehicle Flamer (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 2,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "SRT 6 (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 0
+    },
+    "Improved Heavy Medium Laser (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 10,
+        "heat": 7,
+        "shortRange": 3
+    },
+    "HAG\/30 (Clan)": {
+        "mediumrange": 16,
+        "longRange": 24,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 8
+    },
+    "SRM 2 (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 2,
+        "shortRange": 3
+    },
+    "ATM 6 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 5
+    },
+    "Mech Taser": {
+        "mediumrange": 2,
+        "longRange": 4,
+        "damage": 1,
+        "heat": 6,
+        "shortRange": 1
+    },
+    "SRM 3 (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Streak SRM 6 (R) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "Streak LRM 20 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 7
+    },
+    "SRM 1 (OS) (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Improved Heavy Small Laser (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 6,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "AP Gauss Rifle (Body) (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 3,
+        "heat": 1,
+        "shortRange": 3
+    },
+    "Streak SRM 4 (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 4
+    },
+    "SRM 6 (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 3
+    },
+    "Bombast Laser": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 12,
+        "heat": 12,
+        "shortRange": 5
+    },
+    "Medium Pulse Laser (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 7,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "Advanced SRM 5 (Body) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": -2,
+        "heat": 0,
+        "shortRange": 4
+    },
+    "ER PPC (Clan)": {
+        "mediumrange": 14,
+        "longRange": 23,
+        "damage": 15,
+        "heat": 15,
+        "shortRange": 7
+    },
+    "Heavy Machine Gun Array (Clan)": {
+        "mediumrange": 2,
+        "longRange": 2,
+        "damage": 3,
+        "heat": 0,
+        "shortRange": 1
+    },
+    "Medium Pulse Laser (R) (Clan)": {
+        "mediumrange": 8,
+        "longRange": 12,
+        "damage": 7,
+        "heat": 4,
+        "shortRange": 4
+    },
+    "SRM 4 (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": -2,
+        "heat": 3,
+        "shortRange": 3
+    },
+    "ER Medium Laser (R) (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": 7,
+        "heat": 5,
+        "shortRange": 5
+    },
+    "Small Pulse Laser (Clan)": {
+        "mediumrange": 4,
+        "longRange": 6,
+        "damage": 3,
+        "heat": 2,
+        "shortRange": 2
+    },
+    "ATM 9 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 6,
+        "shortRange": 5
+    },
+    "Ultra AC\/10 (Clan)": {
+        "mediumrange": 12,
+        "longRange": 18,
+        "damage": 10,
+        "heat": 3,
+        "shortRange": 6
+    },
+    "Micro Bomb (Body) (Clan)": {
+        "mediumrange": 0,
+        "longRange": 0,
+        "damage": -3,
+        "heat": 0,
+        "shortRange": 0
+    },
+    "Streak LRM 10 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": -2,
+        "heat": 4,
+        "shortRange": 7
+    },
+    "ATM 12 (Clan)": {
+        "mediumrange": 10,
+        "longRange": 15,
+        "damage": -2,
+        "heat": 8,
+        "shortRange": 5
+    },
+    "Heavy Small Laser (Clan)": {
+        "mediumrange": 2,
+        "longRange": 3,
+        "damage": 6,
+        "heat": 3,
+        "shortRange": 1
+    },
+    "ER Medium Pulse Laser (Clan)": {
+        "mediumrange": 9,
+        "longRange": 14,
+        "damage": 7,
+        "heat": 6,
+        "shortRange": 5
+    },
+    "Light TAG (Clan)": {
+        "mediumrange": 6,
+        "longRange": 9,
+        "damage": 0,
+        "heat": 0,
+        "shortRange": 3
+    },
+    "Rotary AC\/5 (Clan)": {
+        "mediumrange": 14,
+        "longRange": 21,
+        "damage": 5,
+        "heat": 1,
+        "shortRange": 7
     }
-
-    //API
-    return {
-
-        load : function(name, req, onLoad, config) {
-            if ( config.isBuild && (config.inlineJSON === false || name.indexOf(CACHE_BUST_QUERY_PARAM +'=') !== -1) ) {
-                //avoid inlining cache busted JSON or if inlineJSON:false
-                onLoad(null);
-            } else {
-                text.get(req.toUrl(name), function(data){
-                    if (config.isBuild) {
-                        buildMap[name] = data;
-                        onLoad(data);
-                    } else {
-                        onLoad(jsonParse(data));
-                    }
-                },
-                    onLoad.error, {
-                        accept: 'application/json'
-                    }
-                );
-            }
-        },
-
-        normalize : function (name, normalize) {
-            //used normalize to avoid caching references to a "cache busted" request
-            return (name.indexOf(CACHE_BUST_FLAG) === -1)? name : cacheBust(name);
-        },
-
-        //write method based on RequireJS official text plugin by James Burke
-        //https://github.com/jrburke/requirejs/blob/master/text.js
-        write : function(pluginName, moduleName, write){
-            if(moduleName in buildMap){
-                var content = buildMap[moduleName];
-                write('define("'+ pluginName +'!'+ moduleName +'", function(){ return '+ content +';});\n');
-            }
-        }
-
-    };
-});
-
-define("json!../data/weapons.json", function(){ return {"is":{"Narc":{"longRange":9,"damage":-2,"mediumRange":6,"heat":0,"shortRange":3},"LRT 10":{"longRange":0,"damage":-2,"mediumRange":0,"heat":4,"shortRange":0},"ER Small Laser(R)":{"longRange":5,"damage":3,"mediumRange":4,"heat":2,"shortRange":2},"ExtendedLRM 20":{"longRange":38,"damage":-2,"mediumRange":22,"heat":10,"shortRange":12},"B-Pod":{"longRange":0,"damage":1,"mediumRange":0,"heat":0,"shortRange":0},"Medium VSP Laser":{"longRange":9,"damage":-3,"mediumRange":5,"heat":7,"shortRange":2},"Heavy Machine Gun":{"longRange":2,"damage":3,"mediumRange":2,"heat":0,"shortRange":1},"Long Tom Cannon":{"longRange":20,"damage":-5,"mediumRange":13,"heat":20,"shortRange":6},"Flamer(R)":{"longRange":3,"damage":2,"mediumRange":2,"heat":3,"shortRange":1},"ER PPC":{"longRange":23,"damage":10,"mediumRange":14,"heat":15,"shortRange":7},"ER Flamer":{"longRange":7,"damage":2,"mediumRange":5,"heat":4,"shortRange":3},"ER Small Laser":{"longRange":5,"damage":3,"mediumRange":4,"heat":2,"shortRange":2},"Rotary AC\/5":{"longRange":15,"damage":5,"mediumRange":10,"heat":1,"shortRange":5},"Rotary AC\/2":{"longRange":18,"damage":2,"mediumRange":12,"heat":1,"shortRange":6},"Arrow IV":{"longRange":8,"damage":-5,"mediumRange":2,"heat":10,"shortRange":1},"MML 9":{"longRange":0,"damage":-2,"mediumRange":0,"heat":5,"shortRange":0},"MML 7":{"longRange":0,"damage":-2,"mediumRange":0,"heat":4,"shortRange":0},"Streak SRM 2 (OS)":{"longRange":9,"damage":-2,"mediumRange":6,"heat":2,"shortRange":3},"MML 5":{"longRange":0,"damage":-2,"mediumRange":0,"heat":3,"shortRange":0},"LB 20-X AC":{"longRange":12,"damage":20,"mediumRange":8,"heat":6,"shortRange":4},"ER Medium Laser":{"longRange":12,"damage":5,"mediumRange":8,"heat":5,"shortRange":4},"Light Gauss Rifle":{"longRange":25,"damage":8,"mediumRange":17,"heat":1,"shortRange":8},"SRM 4":{"longRange":9,"damage":-2,"mediumRange":6,"heat":3,"shortRange":3},"SRM 2":{"longRange":9,"damage":-2,"mediumRange":6,"heat":2,"shortRange":3},"Laser AMS":{"longRange":0,"damage":2,"mediumRange":0,"heat":7,"shortRange":0},"SRM 6":{"longRange":9,"damage":-2,"mediumRange":6,"heat":4,"shortRange":3},"Heavy Gauss Rifle":{"longRange":20,"damage":-3,"mediumRange":13,"heat":2,"shortRange":6},"Small Laser":{"longRange":3,"damage":3,"mediumRange":2,"heat":1,"shortRange":1},"ER Medium Laser(R)":{"longRange":12,"damage":5,"mediumRange":8,"heat":5,"shortRange":4},"Rocket Launcher 10(R)":{"longRange":18,"damage":-2,"mediumRange":11,"heat":3,"shortRange":5},"MRM 40":{"longRange":15,"damage":-2,"mediumRange":8,"heat":12,"shortRange":3},"Thunderbolt 5":{"longRange":18,"damage":-2,"mediumRange":12,"heat":3,"shortRange":6},"Small VSP Laser":{"longRange":6,"damage":-3,"mediumRange":4,"heat":3,"shortRange":2},"Gauss Rifle":{"longRange":22,"damage":15,"mediumRange":15,"heat":1,"shortRange":7},"Streak SRM 2(R)":{"longRange":9,"damage":-2,"mediumRange":6,"heat":2,"shortRange":3},"HVAC\/10":{"longRange":20,"damage":10,"mediumRange":12,"heat":7,"shortRange":6},"Large Laser":{"longRange":15,"damage":8,"mediumRange":10,"heat":8,"shortRange":5},"Ultra AC\/10":{"longRange":18,"damage":10,"mediumRange":12,"heat":4,"shortRange":6},"Fluid Gun":{"longRange":3,"damage":0,"mediumRange":2,"heat":0,"shortRange":1},"Improved Heavy Gauss Rifle":{"longRange":19,"damage":22,"mediumRange":12,"heat":2,"shortRange":6},"Small Pulse Laser":{"longRange":3,"damage":3,"mediumRange":2,"heat":2,"shortRange":1},"PPC":{"longRange":18,"damage":10,"mediumRange":12,"heat":10,"shortRange":6},"MRM 30":{"longRange":15,"damage":-2,"mediumRange":8,"heat":10,"shortRange":3},"Streak SRM 4":{"longRange":9,"damage":-2,"mediumRange":6,"heat":3,"shortRange":3},"Plasma Rifle":{"longRange":15,"damage":10,"mediumRange":10,"heat":10,"shortRange":5},"MML 3":{"longRange":0,"damage":-2,"mediumRange":0,"heat":2,"shortRange":0},"Streak SRM 6":{"longRange":9,"damage":-2,"mediumRange":6,"heat":4,"shortRange":3},"Streak SRM 2":{"longRange":9,"damage":-2,"mediumRange":6,"heat":2,"shortRange":3},"Machine Gun":{"longRange":3,"damage":2,"mediumRange":2,"heat":0,"shortRange":1},"Machine Gun Array":{"longRange":3,"damage":2,"mediumRange":2,"heat":0,"shortRange":1},"Ultra AC\/20":{"longRange":10,"damage":20,"mediumRange":7,"heat":8,"shortRange":3},"Small X-Pulse Laser":{"longRange":5,"damage":3,"mediumRange":4,"heat":3,"shortRange":2},"Machine Gun(R)":{"longRange":3,"damage":2,"mediumRange":2,"heat":0,"shortRange":1},"Light Machine Gun":{"longRange":6,"damage":1,"mediumRange":4,"heat":0,"shortRange":2},"HVAC\/5":{"longRange":28,"damage":5,"mediumRange":16,"heat":3,"shortRange":8},"ER Large Laser":{"longRange":19,"damage":8,"mediumRange":14,"heat":12,"shortRange":7},"Medium Pulse Laser":{"longRange":6,"damage":6,"mediumRange":4,"heat":4,"shortRange":2},"Large X-Pulse Laser":{"longRange":15,"damage":9,"mediumRange":10,"heat":14,"shortRange":5},"Heavy PPC":{"longRange":18,"damage":15,"mediumRange":12,"heat":15,"shortRange":6},"MagShot":{"longRange":9,"damage":2,"mediumRange":6,"heat":1,"shortRange":3},"MRM 20":{"longRange":15,"damage":-2,"mediumRange":8,"heat":6,"shortRange":3},"LRM 5":{"longRange":21,"damage":-2,"mediumRange":14,"heat":2,"shortRange":7},"Large Pulse Laser":{"longRange":10,"damage":9,"mediumRange":7,"heat":10,"shortRange":3},"Enhanced LRM 15":{"longRange":21,"damage":-2,"mediumRange":14,"heat":5,"shortRange":7},"AMS":{"longRange":0,"damage":1,"mediumRange":0,"heat":1,"shortRange":0},"Ultra AC\/5":{"longRange":20,"damage":5,"mediumRange":13,"heat":1,"shortRange":6},"Ultra AC\/2":{"longRange":25,"damage":2,"mediumRange":17,"heat":1,"shortRange":8},"Enhanced LRM 10":{"longRange":21,"damage":-2,"mediumRange":14,"heat":4,"shortRange":7},"Large VSP Laser":{"longRange":15,"damage":-3,"mediumRange":8,"heat":10,"shortRange":4},"Medium Laser(R)":{"longRange":9,"damage":5,"mediumRange":6,"heat":3,"shortRange":3},"Heavy Machine Gun Array":{"longRange":2,"damage":3,"mediumRange":2,"heat":0,"shortRange":1},"LRM 20":{"longRange":21,"damage":-2,"mediumRange":14,"heat":6,"shortRange":7},"LB 2-X AC":{"longRange":27,"damage":2,"mediumRange":18,"heat":1,"shortRange":9},"C3 Master Boosted with TAG":{"longRange":15,"damage":0,"mediumRange":9,"heat":0,"shortRange":5},"AC\/10":{"longRange":15,"damage":10,"mediumRange":10,"heat":3,"shortRange":5},"Medium VSP Laser(R)":{"longRange":9,"damage":-3,"mediumRange":5,"heat":7,"shortRange":2},"M-Pod":{"longRange":3,"damage":15,"mediumRange":2,"heat":0,"shortRange":1},"Medium Laser":{"longRange":9,"damage":5,"mediumRange":6,"heat":3,"shortRange":3},"Medium X-Pulse Laser(R)":{"longRange":9,"damage":6,"mediumRange":6,"heat":6,"shortRange":3},"Streak LRM 15":{"longRange":21,"damage":-2,"mediumRange":14,"heat":5,"shortRange":7},"Sniper":{"longRange":18,"damage":-5,"mediumRange":2,"heat":10,"shortRange":1},"MRM 10":{"longRange":15,"damage":-2,"mediumRange":8,"heat":4,"shortRange":3},"Enhanced LRM 5":{"longRange":21,"damage":-2,"mediumRange":14,"heat":2,"shortRange":7},"SRM 4(R)":{"longRange":9,"damage":-2,"mediumRange":6,"heat":3,"shortRange":3},"Small Laser(R)":{"longRange":3,"damage":3,"mediumRange":2,"heat":1,"shortRange":1},"AC\/2":{"longRange":24,"damage":2,"mediumRange":16,"heat":1,"shortRange":8},"Medium X-Pulse Laser":{"longRange":9,"damage":6,"mediumRange":6,"heat":6,"shortRange":3},"AMS(R)":{"longRange":0,"damage":1,"mediumRange":0,"heat":1,"shortRange":0},"Small Pulse Laser(R)":{"longRange":3,"damage":3,"mediumRange":2,"heat":2,"shortRange":1},"LRM 15":{"longRange":21,"damage":-2,"mediumRange":14,"heat":5,"shortRange":7},"LRM 10":{"longRange":21,"damage":-2,"mediumRange":14,"heat":4,"shortRange":7},"AC\/5":{"longRange":18,"damage":5,"mediumRange":12,"heat":1,"shortRange":6},"Silver Bullet Gauss Rifle":{"longRange":22,"damage":15,"mediumRange":15,"heat":1,"shortRange":7},"Thunderbolt 15":{"longRange":18,"damage":-2,"mediumRange":12,"heat":7,"shortRange":6},"Sniper Cannon":{"longRange":12,"damage":-5,"mediumRange":8,"heat":10,"shortRange":4},"Mech Taser":{"longRange":4,"damage":1,"mediumRange":2,"heat":6,"shortRange":1},"Rocket Launcher 20":{"longRange":12,"damage":-2,"mediumRange":7,"heat":5,"shortRange":3},"Thunderbolt 10":{"longRange":18,"damage":-2,"mediumRange":12,"heat":5,"shortRange":6},"Light Machine Gun Array":{"longRange":6,"damage":1,"mediumRange":4,"heat":0,"shortRange":2},"Snub-Nose PPC":{"longRange":15,"damage":-3,"mediumRange":13,"heat":10,"shortRange":9},"Blazer Cannon":{"longRange":15,"damage":12,"mediumRange":10,"heat":16,"shortRange":5},"Streak SRM 4(R)":{"longRange":9,"damage":-2,"mediumRange":6,"heat":3,"shortRange":3},"LB 10-X AC":{"longRange":18,"damage":10,"mediumRange":12,"heat":2,"shortRange":6},"Bombast Laser":{"longRange":15,"damage":12,"mediumRange":10,"heat":12,"shortRange":5},"TAG":{"longRange":15,"damage":0,"mediumRange":9,"heat":0,"shortRange":5},"C3 Master with TAG":{"longRange":15,"damage":0,"mediumRange":9,"heat":0,"shortRange":5},"Rocket Launcher 15":{"longRange":15,"damage":-2,"mediumRange":9,"heat":4,"shortRange":4},"Light PPC":{"longRange":18,"damage":5,"mediumRange":12,"heat":5,"shortRange":6},"Heavy Flamer":{"longRange":4,"damage":4,"mediumRange":3,"heat":5,"shortRange":2},"Flamer":{"longRange":3,"damage":2,"mediumRange":2,"heat":3,"shortRange":1},"Enhanced LRM 20":{"longRange":21,"damage":-2,"mediumRange":14,"heat":6,"shortRange":7},"Thunderbolt 20":{"longRange":18,"damage":-2,"mediumRange":12,"heat":8,"shortRange":6},"Medium Pulse Laser(R)":{"longRange":6,"damage":6,"mediumRange":4,"heat":4,"shortRange":2},"Rocket Launcher 10":{"longRange":18,"damage":-2,"mediumRange":11,"heat":3,"shortRange":5},"Thumper":{"longRange":21,"damage":-5,"mediumRange":2,"heat":5,"shortRange":1},"AC\/20":{"longRange":9,"damage":20,"mediumRange":6,"heat":7,"shortRange":3},"ExtendedLRM 10":{"longRange":38,"damage":-2,"mediumRange":22,"heat":6,"shortRange":12},"LAC\/5":{"longRange":15,"damage":5,"mediumRange":10,"heat":1,"shortRange":5},"iNarc":{"longRange":15,"damage":-2,"mediumRange":9,"heat":0,"shortRange":4},"ExtendedLRM 15":{"longRange":38,"damage":-2,"mediumRange":22,"heat":8,"shortRange":12},"LB 5-X AC":{"longRange":21,"damage":5,"mediumRange":14,"heat":1,"shortRange":7},"LAC\/2":{"longRange":18,"damage":2,"mediumRange":12,"heat":1,"shortRange":6}},"clan":{"HAG\/30":{"longRange":24,"damage":-2,"mediumRange":16,"heat":6,"shortRange":8},"Narc":{"longRange":12,"damage":-2,"mediumRange":8,"heat":0,"shortRange":4},"LRM 5":{"longRange":21,"damage":-2,"mediumRange":14,"heat":2,"shortRange":7},"ER Small Laser(R)":{"longRange":6,"damage":5,"mediumRange":4,"heat":2,"shortRange":2},"Large Pulse Laser":{"longRange":20,"damage":10,"mediumRange":14,"heat":10,"shortRange":6},"B-Pod":{"longRange":0,"damage":1,"mediumRange":0,"heat":0,"shortRange":0},"Streak LRM 20":{"longRange":21,"damage":-2,"mediumRange":14,"heat":6,"shortRange":7},"Streak SRM 4 (OS)":{"longRange":12,"damage":-2,"mediumRange":8,"heat":3,"shortRange":4},"AMS":{"longRange":0,"damage":2,"mediumRange":0,"heat":1,"shortRange":0},"ATM 6":{"longRange":15,"damage":-2,"mediumRange":10,"heat":4,"shortRange":5},"Ultra AC\/5":{"longRange":21,"damage":5,"mediumRange":14,"heat":1,"shortRange":7},"ATM 9":{"longRange":15,"damage":-2,"mediumRange":10,"heat":6,"shortRange":5},"Ultra AC\/2":{"longRange":27,"damage":2,"mediumRange":18,"heat":1,"shortRange":9},"Heavy Machine Gun Array":{"longRange":2,"damage":3,"mediumRange":2,"heat":0,"shortRange":1},"LRM 20":{"longRange":21,"damage":-2,"mediumRange":14,"heat":6,"shortRange":7},"Heavy Machine Gun":{"longRange":2,"damage":3,"mediumRange":2,"heat":0,"shortRange":1},"LB 2-X AC":{"longRange":30,"damage":2,"mediumRange":20,"heat":1,"shortRange":10},"Light TAG":{"longRange":9,"damage":0,"mediumRange":6,"heat":0,"shortRange":3},"ATM 3":{"longRange":15,"damage":-2,"mediumRange":10,"heat":2,"shortRange":5},"Improved Heavy Large Laser":{"longRange":15,"damage":16,"mediumRange":10,"heat":18,"shortRange":5},"Flamer(R)":{"longRange":3,"damage":2,"mediumRange":2,"heat":3,"shortRange":1},"ER PPC":{"longRange":23,"damage":15,"mediumRange":14,"heat":15,"shortRange":7},"ER Flamer":{"longRange":7,"damage":2,"mediumRange":5,"heat":4,"shortRange":3},"Rotary AC\/5":{"longRange":21,"damage":5,"mediumRange":14,"heat":1,"shortRange":7},"ER Small Laser":{"longRange":6,"damage":5,"mediumRange":4,"heat":2,"shortRange":2},"Rotary AC\/2":{"longRange":25,"damage":2,"mediumRange":17,"heat":1,"shortRange":8},"Arrow IV":{"longRange":9,"damage":-5,"mediumRange":2,"heat":10,"shortRange":1},"HAG\/40":{"longRange":24,"damage":-2,"mediumRange":16,"heat":8,"shortRange":8},"Streak LRM 15":{"longRange":21,"damage":-2,"mediumRange":14,"heat":5,"shortRange":7},"Heavy Large Laser":{"longRange":15,"damage":16,"mediumRange":10,"heat":18,"shortRange":5},"Streak LRM 10":{"longRange":21,"damage":-2,"mediumRange":14,"heat":4,"shortRange":7},"LB 20-X AC":{"longRange":12,"damage":20,"mediumRange":8,"heat":6,"shortRange":4},"Streak SRM 6(R)":{"longRange":12,"damage":-2,"mediumRange":8,"heat":4,"shortRange":4},"ER Medium Laser":{"longRange":15,"damage":7,"mediumRange":10,"heat":5,"shortRange":5},"Heavy Small Laser":{"longRange":3,"damage":6,"mediumRange":2,"heat":3,"shortRange":1},"ER Medium Pulse Laser":{"longRange":14,"damage":7,"mediumRange":9,"heat":6,"shortRange":5},"SRM 4":{"longRange":9,"damage":-2,"mediumRange":6,"heat":3,"shortRange":3},"ER Micro Laser":{"longRange":4,"damage":2,"mediumRange":2,"heat":1,"shortRange":1},"SRM 2":{"longRange":9,"damage":-2,"mediumRange":6,"heat":2,"shortRange":3},"AP Gauss Rifle":{"longRange":9,"damage":3,"mediumRange":6,"heat":1,"shortRange":3},"Improved Heavy Small Laser":{"longRange":3,"damage":6,"mediumRange":2,"heat":3,"shortRange":1},"Laser AMS":{"longRange":0,"damage":2,"mediumRange":0,"heat":5,"shortRange":0},"Streak LRM 5":{"longRange":21,"damage":-2,"mediumRange":14,"heat":2,"shortRange":7},"SRM 6":{"longRange":9,"damage":-2,"mediumRange":6,"heat":4,"shortRange":3},"ER Medium Laser(R)":{"longRange":15,"damage":7,"mediumRange":10,"heat":5,"shortRange":5},"LRM 15":{"longRange":21,"damage":-2,"mediumRange":14,"heat":5,"shortRange":7},"LRM 10":{"longRange":21,"damage":-2,"mediumRange":14,"heat":4,"shortRange":7},"ProtoMech AC\/4":{"longRange":15,"damage":4,"mediumRange":10,"heat":1,"shortRange":5},"Gauss Rifle":{"longRange":22,"damage":15,"mediumRange":15,"heat":1,"shortRange":7},"Mech Taser":{"longRange":4,"damage":1,"mediumRange":2,"heat":6,"shortRange":1},"SRT 6":{"longRange":0,"damage":-2,"mediumRange":0,"heat":4,"shortRange":0},"Light Machine Gun Array":{"longRange":6,"damage":1,"mediumRange":4,"heat":0,"shortRange":2},"Ultra AC\/10":{"longRange":18,"damage":10,"mediumRange":12,"heat":3,"shortRange":6},"ATM 12":{"longRange":15,"damage":-2,"mediumRange":10,"heat":8,"shortRange":5},"Mortar 8":{"longRange":21,"damage":0,"mediumRange":14,"heat":10,"shortRange":7},"Small Pulse Laser":{"longRange":6,"damage":3,"mediumRange":4,"heat":2,"shortRange":2},"LB 10-X AC":{"longRange":18,"damage":10,"mediumRange":12,"heat":2,"shortRange":6},"Micro Pulse Laser":{"longRange":3,"damage":3,"mediumRange":2,"heat":1,"shortRange":1},"Streak SRM 4":{"longRange":12,"damage":-2,"mediumRange":8,"heat":3,"shortRange":4},"Plasma Cannon":{"longRange":18,"damage":-3,"mediumRange":12,"heat":7,"shortRange":6},"Streak SRM 6":{"longRange":12,"damage":-2,"mediumRange":8,"heat":4,"shortRange":4},"Streak SRM 2":{"longRange":12,"damage":-2,"mediumRange":8,"heat":2,"shortRange":4},"Heavy Flamer":{"longRange":4,"damage":4,"mediumRange":3,"heat":5,"shortRange":2},"Machine Gun Array":{"longRange":3,"damage":2,"mediumRange":2,"heat":0,"shortRange":1},"ER Small Pulse Laser":{"longRange":6,"damage":5,"mediumRange":4,"heat":3,"shortRange":2},"Machine Gun":{"longRange":3,"damage":2,"mediumRange":2,"heat":0,"shortRange":1},"Flamer":{"longRange":3,"damage":2,"mediumRange":2,"heat":3,"shortRange":1},"Ultra AC\/20":{"longRange":12,"damage":20,"mediumRange":8,"heat":7,"shortRange":4},"Medium Pulse Laser(R)":{"longRange":12,"damage":7,"mediumRange":8,"heat":4,"shortRange":4},"ER Large Pulse Laser":{"longRange":23,"damage":10,"mediumRange":15,"heat":13,"shortRange":7},"Machine Gun(R)":{"longRange":3,"damage":2,"mediumRange":2,"heat":0,"shortRange":1},"Light Machine Gun":{"longRange":6,"damage":1,"mediumRange":4,"heat":0,"shortRange":2},"Heavy Medium Laser":{"longRange":9,"damage":10,"mediumRange":6,"heat":7,"shortRange":3},"HAG\/20":{"longRange":24,"damage":-2,"mediumRange":16,"heat":4,"shortRange":8},"ER Large Laser":{"longRange":25,"damage":10,"mediumRange":15,"heat":12,"shortRange":8},"Medium Pulse Laser":{"longRange":12,"damage":7,"mediumRange":8,"heat":4,"shortRange":4},"Clan TAG":{"longRange":15,"damage":0,"mediumRange":9,"heat":0,"shortRange":5},"LB 5-X AC":{"longRange":24,"damage":5,"mediumRange":15,"heat":1,"shortRange":8},"Improved Heavy Medium Laser":{"longRange":9,"damage":10,"mediumRange":6,"heat":7,"shortRange":3}}};});
+}};});
 
 define('app',[
     'jquery',
@@ -32652,19 +39525,19 @@ define('app',[
     'collections/EntityCollection',
 
     'views/left/LeftLayout',
-    'views/viewport/MechDetailView',
+    'views/viewport/UnitDetailView',
 
     'json!../data/weapons.json'
 
-], function ($, Backbone, Marionette, Router, EntityCollection, LeftLayout, MechDetailView, weapons) {
+], function ($, Backbone, Marionette, Router, EntityCollection, LeftLayout, UnitDetailView, weapons) {
     "use strict";
 
     var app = new Marionette.Application();
     var entityCollection = new EntityCollection();
     var controller = {
         select: function (term) {
-            entityCollection.on('sync', function() {
-                var model = entityCollection.get(term);
+            entityCollection.on('sync', function () {
+                var model = entityCollection.get({shortName: term});
                 if (!!model) {
                     model.select();
                 }
@@ -32684,18 +39557,16 @@ define('app',[
 
 //    $.getJSON('data/weapons.json', function(weapons){
 //        todo: once weapons.json has been refactored, this will be a collection.
-        app.addInitializer(function () {
-            app.left.show(new LeftLayout({entities: entityCollection}));
-            app.viewport.show(new MechDetailView({entities: entityCollection, weapons: weapons}));
+    app.addInitializer(function () {
+        app.left.show(new LeftLayout({entities: entityCollection}));
+        app.viewport.show(new UnitDetailView({entities: entityCollection, weapons: weapons}));
 //        });
     });
 
 
-
-
     app.on('initialize:after', function () {
         Backbone.history.start();
-        entityCollection.url = 'data/entities.json';
+        entityCollection.url = 'data/units.json';
         entityCollection.fetch({update: true});
     });
 

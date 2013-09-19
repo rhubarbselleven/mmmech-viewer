@@ -1,0 +1,310 @@
+{"mechs": [
+    {
+        "isClan": true,
+        "model": "BE",
+        "weight": 100,
+        "sys": {
+            "LA": ["Shoulder", "Upper Arm Actuator"],
+            "RT": ["Fusion Engine", "Fusion Engine", ".E", ".E", ".E"],
+            "HD": ["Life Support", "Sensors", "Cockpit", "Sensors", ".E"],
+            "LT": ["Fusion Engine", "Fusion Engine", ".E", ".E", ".E", ".E", ".E", ".E", ".E", ".E"],
+            "CT": ["Fusion Engine", "Fusion Engine", "Fusion Engine", "Gyro", "Gyro", "Gyro", "Gyro", "Fusion Engine", "Fusion Engine", "Fusion Engine", ".E", ".E"],
+            "RA": ["Shoulder", "Upper Arm Actuator"],
+            "LL": ["Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator", ".E", ".E"],
+            "RL": ["Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator", ".E", ".E"]
+        },
+        "set": "Clan TW",
+        "img": "bane.png",
+        "armor": {
+            "LA": [
+                {
+                    "e": 34,
+                    "i": 17
+                }
+            ],
+            "RT": [
+                {
+                    "e": 32,
+                    "i": 21
+                }
+            ],
+            "HD": [
+                {
+                    "e": 9,
+                    "i": 3
+                }
+            ],
+            "LT": [
+                {
+                    "e": 32,
+                    "i": 21
+                }
+            ],
+            "CT": [
+                {
+                    "e": 46,
+                    "i": 31
+                }
+            ],
+            "RA": [
+                {
+                    "e": 34,
+                    "i": 17
+                }
+            ],
+            "LTR": [
+                {
+                    "e": 10
+                }
+            ],
+            "LL": [
+                {
+                    "e": 42,
+                    "i": 21
+                }
+            ],
+            "RTR": [
+                {
+                    "e": 10
+                }
+            ],
+            "CTR": [
+                {
+                    "e": 13
+                }
+            ],
+            "RL": [
+                {
+                    "e": 42,
+                    "i": 21
+                }
+            ]
+        },
+        "bv": 1950,
+        "heatCapacity": 20,
+        "equips": {},
+        "heatSinks": 10,
+        "chassis": "Bane",
+        "cockpit": "Standard Cockpit",
+        "movement": {
+            "w": 3,
+            "r": 5,
+            "rs": "5",
+            "j": 0,
+            "re": 5
+        },
+        "totalExternalArmor": "304",
+        "totalInternalArmor": "152",
+        "weapons": {
+            "LA": ["Ultra AC/2", "Ultra AC/2", "Ultra AC/2", "Ultra AC/2", "Ultra AC/2"],
+            "RT": ["Machine Gun", "Machine Gun", "Machine Gun", "Machine Gun"],
+            "RA": ["Ultra AC/2", "Ultra AC/2", "Ultra AC/2", "Ultra AC/2", "Ultra AC/2"]
+        },
+        "year": 3055,
+        "isOmni": false,
+        "structureType": "Standard",
+        "unitType": "mech",
+        "engine": "300 XL",
+        "isQuad": false,
+        "cost": 22509000,
+        "ammo": {
+            "RT": [
+                {
+                    "t": "Ultra AC/2 Ammo",
+                    "c": 45
+                },
+                {
+                    "t": "Ultra AC/2 Ammo",
+                    "c": 45
+                },
+                {
+                    "t": "Half Machine Gun Ammo",
+                    "c": 100
+                }
+            ],
+            "LT": [
+                {
+                    "t": "Ultra AC/2 Ammo",
+                    "c": 45
+                },
+                {
+                    "t": "Ultra AC/2 Ammo",
+                    "c": 45
+                }
+            ]
+        },
+        "weightClass": "Assault",
+        "armorType": "Standard",
+        "gyro": "Standard Gyro",
+        "fluff": "",
+        "shortName": "Bane BE",
+        "selected": true,
+        "visible": false,
+        "filtered": false
+    }
+],
+
+    "vees": [
+        {
+            "isClan": false,
+            "model": "G",
+            "weight": 100,
+            "sys": null,
+            "set": "IS TW non-box set",
+            "img": "Claymore.png",
+            "armor": {
+                "RR": [
+                    {
+                        "e": 24,
+                        "i": 10
+                    }
+                ],
+                "RS": [
+                    {
+                        "e": 55,
+                        "i": 10
+                    }
+                ],
+                "FR": [
+                    {
+                        "e": 70,
+                        "i": 10
+                    }
+                ],
+                "TU": [
+                    {
+                        "e": 55,
+                        "i": 10
+                    }
+                ],
+                "LS": [
+                    {
+                        "e": 55,
+                        "i": 10
+                    }
+                ]
+            },
+            "bv": 1466,
+            "heatCapacity": 20,
+            "equips": {
+                "BD": ["Guardian ECM Suite", "Beagle Active Probe", "C3 Slave"]
+            },
+            "heatSinks": 10,
+            "chassis": "Claymore",
+            "cockpit": "Standard Cockpit",
+            "movement": {
+                "w": 2,
+                "r": 3,
+                "rs": "3",
+                "j": 0,
+                "re": 3
+            },
+            "totalExternalArmor": "259",
+            "totalInternalArmor": "50",
+            "weapons": {
+                "TU": ["Light Gauss Rifle", "Light Gauss Rifle", "Light Gauss Rifle", "Light Gauss Rifle", "Medium Laser", "Medium Laser", "Medium Laser"]
+            },
+            "year": 3063,
+            "isOmni": true,
+            "structureType": "Endo Steel",
+            "unitType": "vee",
+            "engine": "200 XL",
+            "isQuad": false,
+            "cost": 15461667,
+            "ammo": {
+                "BD": [
+                    {
+                        "t": "Light Gauss Ammo",
+                        "c": 16
+                    },
+                    {
+                        "t": "Light Gauss Ammo",
+                        "c": 16
+                    },
+                    {
+                        "t": "Light Gauss Ammo",
+                        "c": 16
+                    }
+                ]
+            },
+            "weightClass": "Medium",
+            "armorType": "Ferro-Fibrous",
+            "gyro": "Standard Gyro",
+            "fluff": "",
+            "shortName": "Claymore G",
+            "selected": true,
+            "visible": false,
+            "filtered": false,
+            "hasTurrent": true,
+            "movementType": "Tracked"
+        }
+    ],
+
+    "BA": [
+        {
+            "isClan": false,
+            "squadSize": 4,
+            "model": "(David)",
+            "weight": 4,
+            "unitType": "BA",
+            "sys": null,
+            "set": "IS TW non-box set",
+            "img": "achileus(4).png",
+            "armor": {
+                "Trooper 4": [
+                    {
+                        "e": 6,
+                        "i": 1
+                    }
+                ],
+                "Trooper 3": [
+                    {
+                        "e": 6,
+                        "i": 1
+                    }
+                ],
+                "Trooper 2": [
+                    {
+                        "e": 6,
+                        "i": 1
+                    }
+                ],
+                "Trooper 1": [
+                    {
+                        "e": 6,
+                        "i": 1
+                    }
+                ]
+            },
+            "bv": 189,
+            "dwp": false,
+            "equips": {
+                "Squad": ["Improved Stealth", "Anti Personnel Weapon Mount", "Basic Manipulator", "Basic Manipulator"]
+            },
+            "cost": 1920000,
+            "ammo": {},
+            "burdened": false,
+            "chassis": "Achileus",
+            "totalExternalArmor": "24",
+            "movement": {
+                "w": 1,
+                "r": 1,
+                "rs": "1",
+                "j": 3,
+                "re": 1
+            },
+            "totalInternalArmor": "4",
+            "weapons": {
+                "Squad": ["David Light Gauss Rifle", "Swarm Mek", "Attack Swarmed Mek", "Stop Swarm Attack", "Leg Attack", "Infantry Auto Rifle"]
+            },
+            "fluff": "",
+            "year": 3062,
+            "shortName": "Achileus (David)",
+            "selected": true,
+            "visible": false,
+            "filtered": false
+        }
+    ]
+}
+
+
