@@ -12,7 +12,7 @@ define([
             filtered: false // Yeah!
         },
 
-        idAttribute: 'model',
+        idAttribute: 'shortName',
 
         select: function () {
             this.set('selected', true);
