@@ -17,6 +17,16 @@ define([
     return Marionette.ItemView.extend({
         // template: template,
 
+        initialize: function () {
+            // todo: this is a hack for missing values.
+            if (!this.model.get('armorType')) {
+                this.model.set('armorType', 'Standard');
+            }
+            if (!this.model.get('structureType')) {
+                this.model.set('structureType', 'Standard');
+            }
+        },
+
         getTemplate: function () {
             var unitType = this.model.get('unitType');
             if (unitType === "mech") {

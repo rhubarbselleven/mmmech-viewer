@@ -14,18 +14,16 @@ define([
 ], function (Marionette, template, weaponry) {
     return Marionette.ItemView.extend({
         template: template,
-//        weaponryList: weaponry,
-
 
         templateHelpers: {
-            // todo: ideally we wouldn't require this each time.
-            // can get access to the model data itself, but not the view.
+            listOfWeaponry: weaponry,
+
             getWeapon: function (name) {
-                var obj = require('json!../../../data/weapons.json');
+
                 if (this.isClan) {
-                    return obj['clan'][name];
+                    return this.listOfWeaponry['clan'][name];
                 } else {
-                    return obj['is'][name];
+                    return this.listOfWeaponry['is'][name];
                 }
             },
             formatDamage: function (damage) {
@@ -33,6 +31,8 @@ define([
                     return '-- variable --';
                 } else if (damage === -2) {
                     return '-- missile --';
+                } else if (damage === -4) {
+                    return '-- special --';
                 } else if (damage === -5) {
                     return '-- artillery --';
                 } else {
