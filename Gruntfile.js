@@ -12,9 +12,11 @@ var mountFolder = function (connect, dir) {
 // 'test/spec/**/*.js'
 
 module.exports = function (grunt) {
-    // load all grunt tasks
-    require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
-
+    // Load all grunt dependencies.
+    require('load-grunt-tasks')(grunt, {
+        pattern: ['grunt-*']
+    });
+    
     // configurable paths
     var yeomanConfig = {
         app: 'app',
