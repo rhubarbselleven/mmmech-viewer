@@ -139,19 +139,25 @@ module.exports = function (grunt) {
             dist: {
                 // Options: https://github.com/jrburke/r.js/blob/master/build/example.build.js
                 options: {
-                    name: 'config',
+                    name: 'mm-viewer',
 
                     almond: true,
 
                     // `name` and `out` is set by grunt-usemin
                     baseUrl: '<%= yeoman.app %>/scripts',
 
+                    replaceRequireScript: [{
+                        files: ['<%= yeoman.dist %>/index.html'],
+                        module: 'mm-viewer'
+                    }],
+
                     preserveLicenseComments: false,
                     useStrict: true,
                     wrap: true,
                     //uglify2: {} // https://github.com/mishoo/UglifyJS2
                     optimize: 'none',
-                    mainConfigFile: '<%= yeoman.app %>/scripts/config.js'
+                    mainConfigFile: '<%= yeoman.app %>/scripts/mm-viewer.js',
+                    out: '<%= yeoman.dist %>/mm-viewer.js'
                 }
             }
         },
@@ -238,7 +244,7 @@ module.exports = function (grunt) {
         },
         bower: {
             all: {
-                rjsConfig: '<%= yeoman.app %>/scripts/config.js'
+                rjsConfig: '<%= yeoman.app %>/scripts/mm-viewer.js'
             }
         },
         concurrent: {
