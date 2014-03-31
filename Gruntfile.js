@@ -187,6 +187,18 @@ module.exports = function (grunt) {
                         dest: '<%= yeoman.dist %>/images'
                     }
                 ]
+            },
+
+            sourceImages : {
+                files : [
+                    {
+                        expand: true,
+                        cwd: '<%= yeoman.app %>/data/img',
+                        src: ['**/*.png'],
+                        dest: '<%= yeoman.dist %>/img'
+
+                    }
+                ]
             }
         },
         cssmin: {
@@ -311,4 +323,7 @@ module.exports = function (grunt) {
         'jshint',
         'test'
     ]);
+
+    grunt.registerTask('imageryConvert', ['imagemin:sourceImages'])
+
 };
