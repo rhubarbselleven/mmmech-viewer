@@ -36,12 +36,10 @@ define([
         right: '#right'
     });
 
-//    $.getJSON('data/weapons.json', function(weapons){
 //        todo: once weapons.json has been refactored, this will be a collection.
     app.addInitializer(function () {
         app.left.show(new LeftLayout({entities: entityCollection}));
         app.viewport.show(new UnitDetailView({entities: entityCollection, weapons: weapons}));
-//        });
     });
 
 

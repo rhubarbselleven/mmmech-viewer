@@ -12,7 +12,6 @@ require.config({
         'backbone.babysitter': '../bower_components/backbone.babysitter/lib/amd/backbone.babysitter',
         tpl: '../bower_components/requirejs-tpl/tpl',
         async: '../bower_components/requirejs-plugins/src/async',
-        goog: '../bower_components/requirejs-plugins/src/goog',
         propertyParser: '../bower_components/requirejs-plugins/src/propertyParser',
         text: '../bower_components/requirejs-plugins/lib/text',
         json: '../bower_components/requirejs-plugins/src/json',
@@ -32,6 +31,11 @@ require.config({
             deps: ['underscore'],
             exports: 'Backbone'
         },
+
+
+
+
+
 
         highcharts: {
             deps: ['jquery'],

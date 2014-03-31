@@ -19,6 +19,10 @@ module.exports = function (grunt) {
         pattern: ['grunt-*']
     });
 
+    require('connect-livereload')({
+        port: LIVERELOAD_PORT
+    });
+
     // configurable paths
     var yeomanConfig = {
         app: 'app',
@@ -30,7 +34,7 @@ module.exports = function (grunt) {
         watch: {
 
             options: {
-                nospawn: true
+                livereload: true
             },
 
             compass: {
@@ -39,9 +43,7 @@ module.exports = function (grunt) {
             },
 
             livereload: {
-                options: {
-                    livereload: LIVERELOAD_PORT
-                },
+
                 files: [
                     '<%= yeoman.app %>/*.html',
                     '{.tmp,<%= yeoman.app %>}/styles/{,*/}*.css',
@@ -62,10 +64,11 @@ module.exports = function (grunt) {
                 options: {
                     middleware: function (connect) {
                         return [
+                            lrSnippet,
                             mountFolder(connect, '.tmp'),
                             mountFolder(connect, yeomanConfig.app),
-                            mountFolder(connect, '.'),
-                            lrSnippet
+                            mountFolder(connect, '.')
+
                         ];
                     }
                 }
@@ -271,9 +274,7 @@ module.exports = function (grunt) {
         grunt.task.run([
             'clean:server',
             'concurrent:server',
-            'livereload-start',
             'connect:livereload',
-            'open',
             'watch'
         ]);
     });
