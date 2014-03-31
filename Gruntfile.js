@@ -16,7 +16,7 @@ module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt, {
         pattern: ['grunt-*']
     });
-    
+
     // configurable paths
     var yeomanConfig = {
         app: 'app',

@@ -2,20 +2,19 @@
     "name": "mmmech-viewer",
     "version": "0.0.0",
     "dependencies": {
+
+        "jquery": "1.11.0",
+        "requirejs": "~2.1.11",
+        "requirejs-tpl": "*",
+        "backbone.marionette": "~1.7.3",
+        "augment.js": "~1.0.0",
+        "requirejs-plugins": "~1.0.2",
+
         "sass-bootstrap": "~2.3.0",
-        "requirejs": "~2.1.4",
-        "modernizr": "~2.6.2",
-        "jquery": "~1.9.1",
-        "backbone.wreqr": "~0.2.0",
-        "backbone.babysitter": "~0.0.6",
-        "underscore-amd": "~1.4.4",
-        "backbone": "~1.0.0",
-        "marionette": "~1.1.0",
-        "requirejs-tpl": "latest",
-        "requirejs-plugins": "latest",
-        "bootstrap.css": "~2.1.1",
-        "Chart.js": "git://github.com/nnnick/Chart.js.git",
-        "highcharts.com": "~v3.0.1"
+        "modernizr": "~2.7.2",
+        "backbone": "~1.1.2",
+
+        "highcharts.com": "~v3.0.9"
     },
     "devDependencies": {}
 }
